@@ -1,4 +1,4 @@
 #!/bin/sh
 
-./build-contracts.sh
+./build-wasm.sh
 cargo test --features elrond-wasm-debug/arwen-tests
