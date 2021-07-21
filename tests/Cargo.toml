@@ -1,0 +1,32 @@
+[package]
+name = "tests"
+version = "0.0.1"
+authors = [ "Claudiu-Marcel Bruda <claudiu.bruda@elrond.com>",]
+edition = "2018"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies.job]
+path = "../job"
+
+[dependencies.job-factory]
+path = "../job-factory"
+
+[dependencies.elrond-wasm]
+version = "0.17"
+path = "../../elrond-wasm-rs/elrond-wasm"
+
+[dependencies.elrond-wasm-derive]
+version = "0.17"
+path = "../../elrond-wasm-rs/elrond-wasm-derive"
+
+[dependencies.elrond-wasm-node]
+version = "0.17"
+path = "../../elrond-wasm-rs/elrond-wasm-node"
+optional = true
+
+[dev-dependencies.elrond-wasm-debug]
+version = "0.17"
+path = "../../elrond-wasm-rs/elrond-wasm-debug"
