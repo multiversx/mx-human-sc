@@ -25,18 +25,18 @@ jobs:
           toolchain: nightly
       - name: Install erdpy and arwentools
         run : |
-          source .github/workflows/env
+          source sc-human-rs/.github/workflows/env
           pip3 install erdpy
           mkdir $HOME/elrondsdk
           erdpy config set dependencies.arwentools.tag v1.4.1
           erdpy deps install arwentools
       - name: Build the wasm contracts
         run: |
-          source .github/workflows/env
+          source sc-human-rs/.github/workflows/env
           cd sc-human-rs && ./build-wasm.sh
       - name: Run Arwen tests
         run: |
-          source .github/workflows/env
+          source sc-human-rs/.github/workflows/env
           cd sc-human-rs && cargo test --features elrond-wasm-debug/arwen-tests
   rust_test:
     name: Rust tests
