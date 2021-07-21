@@ -56,25 +56,3 @@ jobs:
           toolchain: nightly
       - name: Run rust tests
         run: cd sc-human-rs && cargo test
-  clippy_check:
-    name: Clippy linter check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          repository: 'ElrondNetwork/elrond-wasm-rs'
-          ref: 'master'
-          path: 'elrond-wasm-rs'
-      - uses: actions/checkout@v2
-        with:
-          path: 'sc-human-rs'
-      - uses: actions-rs/toolchain@v1
-        with:
-            toolchain: nightly
-            components: clippy
-            default: true
-      - uses: actions-rs/clippy-check@v1
-        with:
-          working-directory: ./sc-human-rs
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args:
