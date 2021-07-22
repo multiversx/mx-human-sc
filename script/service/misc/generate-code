@@ -1,0 +1,12 @@
+#!/bin/sh
+
+script/service/bootstrap
+
+# https://loopback.io/doc/en/lb4/Application-generator.html
+npx lb4 app --eslint --prettier --mocha --vscode --outDir . api-service
+
+cd api-service
+npm install @loopback/core
+
+# https://loopback.io/doc/en/lb4/OpenAPI-generator.html
+npx lb4 openapi https://app.swaggerhub.com/apiproxy/schema/file/apis/excerebrose/human-protocol/1.1.0?format=yaml --validate
