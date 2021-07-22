@@ -1,0 +1,121 @@
+{
+    "name": "3-setup",
+    "comment": "",
+    "gasSchedule": "v3",
+    "steps": [
+        {
+            "step": "externalSteps",
+            "path": "2-create-job.scen.json"
+        },
+        {
+            "step": "scCall",
+            "txId": "3.1-setup",
+            "tx": {
+                "from": "address:requester",
+                "to": "sc:job-1",
+                "value": "0",
+                "function": "setup",
+                "arguments": [
+                    "address:reputation-oracle",
+                    "address:recording-oracle",
+                    "5",
+                    "7",
+                    "str:https://example.com",
+                    "str:test-hash"
+                ],
+                "gasLimit": "50,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "status": "0",
+                "message": "",
+                "logs": [
+                    {
+                        "address": "sc:job-1",
+                        "identifier": "str:pending",
+                        "topics": [
+                            "str:https://example.com",
+                            "str:test-hash"
+                        ],
+                        "data": ""
+                    }
+                ],
+                "out": [],
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "scCall",
+            "txId": "3.2-deposit",
+            "tx": {
+                "from": "address:requester",
+                "to": "sc:job-1",
+                "value": "1,000",
+                "function": "deposit",
+                "arguments": [],
+                "gasLimit": "50,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "status": "0",
+                "message": "",
+                "logs": [],
+                "out": [],
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "scQuery",
+            "txId": "3.3-getBalance",
+            "tx": {
+                "to": "sc:job-1",
+                "function": "getBalance",
+                "arguments": []
+            },
+            "expect": {
+                "status": "0",
+                "message": "",
+                "logs": [],
+                "out": [
+                    "1,000"
+                ],
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "sc:job-1": {
+                    "nonce": "0",
+                    "balance": "1,000",
+                    "storage": {
+                        "str:token": "str:EGLD",
+                        "str:canceler": "address:requester",
+                        "str:expiration": "42,008,640,000",
+                        "str:trusted_handlers.info": "u32:4|u32:1|u32:4|u32:4",
+                        "str:trusted_handlers.node_links|u32:1": "u32:0|u32:2",
+                        "str:trusted_handlers.node_id|address:requester": "1",
+                        "str:trusted_handlers.value|u32:1": "address:requester",
+                        "str:trusted_handlers.node_links|u32:2": "u32:1|u32:3",
+                        "str:trusted_handlers.node_id|sc:job-factory": "2",
+                        "str:trusted_handlers.value|u32:2": "sc:job-factory",
+                        "str:trusted_handlers.node_links|u32:3": "u32:2|u32:4",
+                        "str:trusted_handlers.node_id|address:recording-oracle": "3",
+                        "str:trusted_handlers.value|u32:3": "address:recording-oracle",
+                        "str:trusted_handlers.node_links|u32:4": "u32:3|u32:0",
+                        "str:trusted_handlers.node_id|address:reputation-oracle": "4",
+                        "str:trusted_handlers.value|u32:4": "address:reputation-oracle",
+                        "str:manifest": "nested:str:https://example.com|nested:str:test-hash",
+                        "str:oracles": "address:reputation-oracle|biguint:5|address:recording-oracle|biguint:7",
+                        "str:status": "1"
+                    },
+                    "code": "file:../../job/output/job.wasm"
+                },
+                "+": ""
+            }
+        }
+    ]
+}

@@ -1,0 +1,105 @@
+{
+    "name": "5-bulk-pay-out",
+    "comment": "",
+    "gasSchedule": "v3",
+    "steps": [
+        {
+            "step": "externalSteps",
+            "path": "4-store-intermediate.scen.json"
+        },
+        {
+            "step": "scCall",
+            "txId": "5.1-bulkPayOut",
+            "tx": {
+                "from": "address:reputation-oracle",
+                "to": "sc:job-1",
+                "value": "0",
+                "function": "bulkPayOut",
+                "arguments": [
+                    "address:provider-1|biguint:300|address:provider-2|biguint:700",
+                    "nested:str:https://final-url.example.com|nested:str:final-hash"
+                ],
+                "gasLimit": "50,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "status": "0",
+                "message": "",
+                "logs": [],
+                "out": [],
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "storage": {},
+                    "code": ""
+                },
+                "address:requester": {
+                    "nonce": "*",
+                    "balance": "9,000",
+                    "storage": {},
+                    "code": ""
+                },
+                "address:recording-oracle": {
+                    "nonce": "*",
+                    "balance": "70",
+                    "storage": {},
+                    "code": ""
+                },
+                "address:reputation-oracle": {
+                    "nonce": "*",
+                    "balance": "50",
+                    "storage": {},
+                    "code": ""
+                },
+                "sc:job-factory": {
+                    "nonce": "1",
+                    "balance": "0",
+                    "storage": {
+                        "str:token": "str:EGLD",
+                        "str:job_template_address": "sc:job-template",
+                        "str:jobs.info": "u32:1|u32:1|u32:1|u32:1",
+                        "str:jobs.node_links|u32:1": "u32:0|u32:0",
+                        "str:jobs.node_id|sc:job-1": "1",
+                        "str:jobs.value|u32:1": "sc:job-1"
+                    },
+                    "code": "file:../../job-factory/output/job-factory.wasm"
+                },
+                "sc:job-1": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "storage": {
+                        "str:token": "str:EGLD",
+                        "str:canceler": "address:requester",
+                        "str:expiration": "42,008,640,000",
+                        "str:trusted_handlers.info": "u32:4|u32:1|u32:4|u32:4",
+                        "str:trusted_handlers.node_links|u32:1": "u32:0|u32:2",
+                        "str:trusted_handlers.node_id|address:requester": "1",
+                        "str:trusted_handlers.value|u32:1": "address:requester",
+                        "str:trusted_handlers.node_links|u32:2": "u32:1|u32:3",
+                        "str:trusted_handlers.node_id|sc:job-factory": "2",
+                        "str:trusted_handlers.value|u32:2": "sc:job-factory",
+                        "str:trusted_handlers.node_links|u32:3": "u32:2|u32:4",
+                        "str:trusted_handlers.node_id|address:recording-oracle": "3",
+                        "str:trusted_handlers.value|u32:3": "address:recording-oracle",
+                        "str:trusted_handlers.node_links|u32:4": "u32:3|u32:0",
+                        "str:trusted_handlers.node_id|address:reputation-oracle": "4",
+                        "str:trusted_handlers.value|u32:4": "address:reputation-oracle",
+                        "str:manifest": "nested:str:https://example.com|nested:str:test-hash",
+                        "str:oracles": "address:reputation-oracle|biguint:5|address:recording-oracle|biguint:7",
+                        "str:final_results": "nested:str:https://final-url.example.com|nested:str:final-hash",
+                        "str:status": "3"
+                    },
+                    "code": "file:../../job/output/job.wasm"
+                },
+                "+": ""
+            }
+        }
+    ]
+}
