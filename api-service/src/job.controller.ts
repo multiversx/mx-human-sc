@@ -7,7 +7,7 @@ import { GetResultsBody } from 'model/getResultsBody';
 import { IntDataResponse } from 'model/intDataResponse';
 import { JobCreateBody } from 'model/jobCreateBody';
 import { JobStatusResponse } from 'model/jobStatusResponse';
-import { JobAddressDto } from 'model/jobAddressDto';
+import { AddressDto } from 'model/addressDto';
 import { StringDataResponse } from 'model/stringDataResponse';
 import { JobService } from './job.service';
 import { StoreJobIntermediateResultsBody } from 'model/storeJobIntermediateResultsBody';
@@ -30,7 +30,7 @@ export class JobController {
      * Receive the address of the launcher of a given job address
      */
     @Get("launcher")
-    async launcher(@Query() jobAddressDto: JobAddressDto): Promise<StringDataResponse> {
+    async launcher(@Query() jobAddressDto: AddressDto): Promise<StringDataResponse> {
         return this.jobService.launcher(jobAddressDto);
     }
 
@@ -42,7 +42,7 @@ export class JobController {
      * @param gasPayerPrivate Private Key for the address paying for the gas costs
      */
     @Get("status")
-    async status(@Query() jobAddressDto: JobAddressDto): Promise<JobStatusResponse> {
+    async status(@Query() jobAddressDto: AddressDto): Promise<JobStatusResponse> {
         return this.jobService.status(jobAddressDto);
     }
 
@@ -51,7 +51,7 @@ export class JobController {
      * Receive the Manifest URL of a given job address
      */
     @Get("manifestUrl")
-    async manifestUrl(@Query() jobAddressDto: JobAddressDto): Promise<StringDataResponse> {
+    async manifestUrl(@Query() jobAddressDto: AddressDto): Promise<StringDataResponse> {
         return this.jobService.manifestUrl(jobAddressDto);
     }
 
@@ -60,7 +60,7 @@ export class JobController {
      * Receive the Manifest Hash of a given job address
      */
     @Get("manifestHash")
-    async manifestHash(@Query() jobAddressDto: JobAddressDto): Promise<StringDataResponse> {
+    async manifestHash(@Query() jobAddressDto: AddressDto): Promise<StringDataResponse> {
         return this.jobService.manifestHash(jobAddressDto);
     }
 
@@ -68,7 +68,7 @@ export class JobController {
      * Balance in HMT of a given job address
      */
     @Get("balance")
-    async balance(@Query() jobAddressDto: JobAddressDto): Promise<IntDataResponse> {
+    async balance(@Query() jobAddressDto: AddressDto): Promise<IntDataResponse> {
         return this.jobService.balance(jobAddressDto);
     }
 
@@ -76,7 +76,7 @@ export class JobController {
      * Abort a given job
      */
     @Patch("abort")
-    async abort(@Body() jobAddressDto: JobAddressDto): Promise<BoolDataResponse> {
+    async abort(@Body() jobAddressDto: AddressDto): Promise<BoolDataResponse> {
         return this.jobService.abort(jobAddressDto);
     }
 
@@ -85,7 +85,7 @@ export class JobController {
      * @param jobAddressDto 
      */
     @Patch("cancel")
-    async cancel(@Body() jobAddressDto: JobAddressDto): Promise<BoolDataResponse> {
+    async cancel(@Body() jobAddressDto: AddressDto): Promise<BoolDataResponse> {
         return this.jobService.cancel(jobAddressDto);
     }
 
@@ -93,7 +93,7 @@ export class JobController {
      * Complete a given job
      */
     @Patch("complete")
-    async complete(@Body() jobAddressDto: JobAddressDto): Promise<BoolDataResponse> {
+    async complete(@Body() jobAddressDto: AddressDto): Promise<BoolDataResponse> {
         return this.jobService.complete(jobAddressDto);
     }
 

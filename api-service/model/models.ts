@@ -1,7 +1,7 @@
 export * from './addJobTrustedHandlersBody';
 export * from './boolDataResponse';
 export * from './bulkPayoutJobBody';
-export * from './jobAddressDto';
+export * from './addressDto';
 export * from './errorNotcreateResponse';
 export * from './errorNotexistResponse';
 export * from './errorParameterResponse';
@@ -13,5 +13,5 @@ export * from './jobListResponse';
 export * from './jobStatusResponse';
 export * from './manifestValidityResponse';
 export * from './pollingUrlResponse';
-export * from './jobAddressDto';
+export * from './addressDto';
 export * from './stringDataResponse';

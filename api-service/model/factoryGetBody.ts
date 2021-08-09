@@ -1,3 +1,3 @@
-import { JobAddressDto } from "./jobAddressDto";
+import { AddressDto } from "./addressDto";
 
-export class FactoryGetBody extends JobAddressDto { }
+export class FactoryGetBody extends AddressDto { }

@@ -17,7 +17,7 @@ export class FactoryController {
      */
     @Get()
     public getFactory(@Query() factoryGetBody: FactoryGetBody): Promise<JobListResponse> {
-        return this.factoryService.getFactory(factoryGetBody.address, factoryGetBody.gasPayer, factoryGetBody.gasPayerPrivate);
+        return this.factoryService.getFactory(factoryGetBody);
     }
 
     /**

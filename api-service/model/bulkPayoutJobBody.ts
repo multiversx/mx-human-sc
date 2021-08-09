@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsUrl } from "class-validator";
-import { JobAddressDto } from "./jobAddressDto";
+import { AddressDto } from "./addressDto";
 
-export class BulkPayoutJobBody extends JobAddressDto {
+export class BulkPayoutJobBody extends AddressDto {
     @IsNotEmpty()
     @ApiProperty({ example: "<reputation oracles public address> 0x0000000", description: 'Address of the reputation oracle' })
     repOraclePub: string;
