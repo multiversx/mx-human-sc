@@ -12,7 +12,7 @@ use url_hash_pair::UrlHashPair;
 
 use crate::oracle::Oracle;
 
-#[elrond_wasm_derive::contract]
+#[elrond_wasm::contract]
 pub trait Job {
     #[init]
     fn init(
@@ -26,8 +26,10 @@ pub trait Job {
         self.status().set(&Status::Launched);
         let expiration = duration + self.blockchain().get_block_timestamp();
         self.expiration().set(&expiration);
+        let caller = self.blockchain().get_caller();
+        self.launcher().set(&caller);
         self.canceler().set(&canceler);
-        self.insert_trusted_handlers(&[canceler, self.blockchain().get_caller()]);
+        self.insert_trusted_handlers(&[caller, canceler]);
         self.insert_trusted_handlers(trusted_handlers.as_slice());
     }
 
@@ -43,7 +45,11 @@ pub trait Job {
 
     #[view(getBalance)]
     fn get_balance(&self) -> Self::BigUint {
-        self.blockchain().get_sc_balance(&self.token().get(), 0)
+        self.blockchain().get_esdt_balance(
+            &self.blockchain().get_sc_address(),
+            &self.token().get(),
+            0,
+        )
     }
 
     #[endpoint(addTrustedHandlers)]
@@ -98,7 +104,7 @@ pub trait Job {
         self.require_not_expired()?;
         self.require_status(&[Status::Pending, Status::Partial])?;
 
-        self.intermediate_storage_event(url, hash);
+        self.intermediate_storage().push(&UrlHashPair { url, hash });
         Ok(())
     }
 
@@ -252,6 +258,10 @@ pub trait Job {
     fn manifest(&self) -> SingleValueMapper<Self::Storage, UrlHashPair>;
 
     #[view]
+    #[storage_mapper("launcher")]
+    fn launcher(&self) -> SingleValueMapper<Self::Storage, Address>;
+
+    #[view]
     #[storage_mapper("canceler")]
     fn canceler(&self) -> SingleValueMapper<Self::Storage, Address>;
 
@@ -261,20 +271,21 @@ pub trait Job {
 
     #[view]
     #[storage_mapper("trusted_handlers")]
-    fn trusted_handlers(&self) -> SetMapper<Self::Storage, Address>;
+    fn trusted_handlers(&self) -> SafeSetMapper<Self::Storage, Address>;
 
     #[view]
     #[storage_mapper("oracles")]
     fn oracles(&self) -> SingleValueMapper<Self::Storage, Oracles<Self::BigUint>>;
 
-    #[view]
+    #[view(getIntermediateResults)]
+    #[storage_mapper("intermediate_storage")]
+    fn intermediate_storage(&self) -> VecMapper<Self::Storage, UrlHashPair>;
+
+    #[view(getFinalResults)]
     #[storage_mapper("final_results")]
     fn final_results(&self) -> SingleValueMapper<Self::Storage, UrlHashPair>;
 
     // events
-
-    #[event("intermediate_storage")]
-    fn intermediate_storage_event(&self, #[indexed] url: BoxedBytes, #[indexed] hash: BoxedBytes);
 
     #[event("pending")]
     fn pending_event(&self, #[indexed] url: BoxedBytes, #[indexed] hash: BoxedBytes);

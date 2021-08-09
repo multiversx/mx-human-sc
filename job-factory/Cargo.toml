@@ -12,18 +12,15 @@ path = "src/job-factory.rs"
 wasm-output-mode = ["elrond-wasm-node"]
 
 [dependencies.elrond-wasm]
-version = "0.17"
+version = "0.18"
 path = "../../elrond-wasm-rs/elrond-wasm"
-
-[dependencies.elrond-wasm-derive]
-version = "0.17"
-path = "../../elrond-wasm-rs/elrond-wasm-derive"
+features = ["derive"]
 
 [dependencies.elrond-wasm-node]
-version = "0.17"
+version = "0.18"
 path = "../../elrond-wasm-rs/elrond-wasm-node"
 optional = true
 
 [dev-dependencies.elrond-wasm-debug]
-version = "0.17"
+version = "0.18"
 path = "../../elrond-wasm-rs/elrond-wasm-debug"
