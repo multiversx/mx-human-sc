@@ -1,16 +1,15 @@
 #![no_std]
 #![feature(destructuring_assignment)]
 
+use oracle::{Oracle, OraclePair};
+use status::Status;
+use url_hash_pair::UrlHashPair;
+
 elrond_wasm::imports!();
 
 mod oracle;
 mod status;
 mod url_hash_pair;
-use oracle::Oracles;
-use status::Status;
-use url_hash_pair::UrlHashPair;
-
-use crate::oracle::Oracle;
 
 #[elrond_wasm::contract]
 pub trait Job {
@@ -45,11 +44,7 @@ pub trait Job {
 
     #[view(getBalance)]
     fn get_balance(&self) -> Self::BigUint {
-        self.blockchain().get_esdt_balance(
-            &self.blockchain().get_sc_address(),
-            &self.token().get(),
-            0,
-        )
+        self.blockchain().get_sc_balance(&self.token().get(), 0)
     }
 
     #[endpoint(addTrustedHandlers)]
@@ -76,7 +71,7 @@ pub trait Job {
         let total_stake = &reputation_oracle_stake + &recording_oracle_stake;
         require!(total_stake <= 100u64, "Stake out of bounds");
 
-        self.oracles().set(&Oracles {
+        self.oracle_pair().set(&OraclePair {
             reputation: Oracle {
                 address: reputation_oracle.clone(),
                 stake: reputation_oracle_stake,
@@ -104,7 +99,7 @@ pub trait Job {
         self.require_not_expired()?;
         self.require_status(&[Status::Pending, Status::Partial])?;
 
-        self.intermediate_storage().push(&UrlHashPair { url, hash });
+        self.intermediate_results().set(&UrlHashPair { url, hash });
         Ok(())
     }
 
@@ -120,7 +115,7 @@ pub trait Job {
         self.require_not_broke()?;
 
         let token = self.token().get();
-        let oracles = self.oracles().get();
+        let oracles = self.oracle_pair().get();
 
         let mut recording_fee = Self::BigUint::zero();
         let mut reputation_fee = Self::BigUint::zero();
@@ -192,6 +187,24 @@ pub trait Job {
         Ok(())
     }
 
+    #[view(getIntermediateResults)]
+    fn get_intermediate_results(&self) -> SCResult<UrlHashPair> {
+        require!(
+            !self.intermediate_results().is_empty(),
+            "intermediate results are not set"
+        );
+        Ok(self.intermediate_results().get())
+    }
+
+    #[view(getFinalResults)]
+    fn get_final_results(&self) -> SCResult<UrlHashPair> {
+        require!(
+            !self.final_results().is_empty(),
+            "final results are not set"
+        );
+        Ok(self.final_results().get())
+    }
+
     fn transfer_fee(
         &self,
         mut from_amount: Self::BigUint,
@@ -245,43 +258,41 @@ pub trait Job {
 
     // storage
 
-    #[view]
+    #[view(getToken)]
     #[storage_mapper("token")]
     fn token(&self) -> SingleValueMapper<Self::Storage, TokenIdentifier>;
 
-    #[view]
+    #[view(getStatus)]
     #[storage_mapper("status")]
     fn status(&self) -> SingleValueMapper<Self::Storage, Status>;
 
-    #[view]
+    #[view(getManifest)]
     #[storage_mapper("manifest")]
     fn manifest(&self) -> SingleValueMapper<Self::Storage, UrlHashPair>;
 
-    #[view]
+    #[view(getLauncher)]
     #[storage_mapper("launcher")]
     fn launcher(&self) -> SingleValueMapper<Self::Storage, Address>;
 
-    #[view]
+    #[view(getCanceler)]
     #[storage_mapper("canceler")]
     fn canceler(&self) -> SingleValueMapper<Self::Storage, Address>;
 
-    #[view]
+    #[view(getExpiration)]
     #[storage_mapper("expiration")]
     fn expiration(&self) -> SingleValueMapper<Self::Storage, u64>;
 
-    #[view]
+    #[view(getTrustedHandlers)]
     #[storage_mapper("trusted_handlers")]
     fn trusted_handlers(&self) -> SafeSetMapper<Self::Storage, Address>;
 
-    #[view]
+    #[view(getOraclePair)]
     #[storage_mapper("oracles")]
-    fn oracles(&self) -> SingleValueMapper<Self::Storage, Oracles<Self::BigUint>>;
+    fn oracle_pair(&self) -> SingleValueMapper<Self::Storage, OraclePair<Self::BigUint>>;
 
-    #[view(getIntermediateResults)]
-    #[storage_mapper("intermediate_storage")]
-    fn intermediate_storage(&self) -> VecMapper<Self::Storage, UrlHashPair>;
+    #[storage_mapper("intermediate_results")]
+    fn intermediate_results(&self) -> SingleValueMapper<Self::Storage, UrlHashPair>;
 
-    #[view(getFinalResults)]
     #[storage_mapper("final_results")]
     fn final_results(&self) -> SingleValueMapper<Self::Storage, UrlHashPair>;
 
