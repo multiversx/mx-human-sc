@@ -1,3 +1,0 @@
-#!/bin/sh
-
-/usr/bin/env node script/local-testnet/deploy.mjs
