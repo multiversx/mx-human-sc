@@ -7,5 +7,5 @@ let { erdSys, wallets } = await erdjs.setupInteractive(networkChoice);
 let owner = wallets[ownerWalletName];
 
 let job = await erdSys.loadWrapper("job");
-await job.sender(owner).gas(150_000_000).call.deploy('-', owner, 0);
+await job.sender(owner).gas(130_000_000).call.deploy('-', owner, 0);
 console.log(`Job template address: ${job.getAddress().bech32()}`);
