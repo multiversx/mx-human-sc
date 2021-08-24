@@ -4,7 +4,7 @@ import { AddressDto } from "./addressDto";
 
 export class BulkPayoutJobBody extends AddressDto {
     @IsNotEmpty()
-    @ApiProperty({ example: "<reputation oracles public address> 0x0000000", description: 'Address of the reputation oracle' })
+    @ApiProperty({ example: "testRepOraclePub", description: 'Reputation oracle secp256k1 public key' })
     repOraclePub: string;
 
     @IsNotEmpty()

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { AddJobTrustedHandlersBody } from 'model/addJobTrustedHandlersBody';
 import { BoolDataResponse } from 'model/boolDataResponse';
 import { BulkPayoutJobBody } from 'model/bulkPayoutJobBody';
@@ -8,128 +8,209 @@ import { JobCreateBody } from 'model/jobCreateBody';
 import { JobStatusResponse } from 'model/jobStatusResponse';
 import { StringDataResponse } from 'model/stringDataResponse';
 import { StoreJobIntermediateResultsBody } from 'model/storeJobIntermediateResultsBody';
-import { Address, ContractWrapper, SystemWrapper } from "@elrondnetwork/erdjs/out";
-import { makeWallet, prepareContract } from './common';
+import {
+    Address,
+    Balance,
+    BalanceBuilder,
+    ContractWrapper,
+    SystemWrapper,
+} from '@elrondnetwork/erdjs/out';
+import {
+    getJsonFromUrl,
+    loadContracts,
+    makeWallet,
+    prepareContract,
+    uploadFromUrl,
+} from './common';
 import { AddressDto } from 'model/addressDto';
+import { StorageService } from './storage.service';
+import { ApiConfigService } from './apiConfigService';
 
 @Injectable()
-export class JobService {
-    constructor(private readonly erdSys: SystemWrapper, private readonly jobContract: ContractWrapper, private readonly factoryContract: ContractWrapper) { }
+export class JobService implements OnModuleInit {
+    erdSys: SystemWrapper;
+    jobContract: ContractWrapper;
+    factoryContract: ContractWrapper;
+    humanToken: BalanceBuilder;
+
+    constructor(
+        private storage: StorageService,
+        private config: ApiConfigService,
+    ) { }
+
+    async onModuleInit() {
+        const { erdSys, jobContract, factoryContract, humanToken } =
+            await loadContracts(this.config);
+        this.erdSys = erdSys;
+        this.jobContract = jobContract;
+        this.factoryContract = factoryContract;
+        this.humanToken = humanToken;
+    }
 
     async newJob(jobCreateBody: JobCreateBody): Promise<StringDataResponse> {
-        let wallet = await makeWallet(jobCreateBody, this.erdSys);
-        let jobAddress: Address = await this.factoryContract.address(jobCreateBody.factoryAddress).sender(wallet).call.createJob();
+        const wallet = await makeWallet(jobCreateBody, this.erdSys);
 
-        let reputationOracle = jobCreateBody.repOraclePub;
-        let recordingOracle = reputationOracle;
-        let reputationOracleStake = 5;
-        let recordingOracleStake = 5;
-        let manifestUrl = jobCreateBody.manifestUrl;
-        let manifestHash = "TODO";
-        await this.jobContract.address(jobAddress).sender(wallet)
+        const jobAddress = await this.factoryContract
+            .address(jobCreateBody.factoryAddress)
+            .sender(wallet)
+            .gas(30_000_000)
+            .call.createJob();
+        this.jobContract.address(jobAddress);
+
+        const { repOraclePub, manifestUrl } = jobCreateBody;
+        const {
+            hash,
+            url,
+            json: manifest,
+        } = await uploadFromUrl(manifestUrl, repOraclePub, this.storage);
+        const {
+            task_bid_price: taskBidPrice,
+            job_total_tasks: numberOfAnswers,
+            reputation_oracle_addr: reputationOracle,
+            recording_oracle_addr: recordingOracle,
+            oracle_stake: oracleStake,
+        } = manifest;
+
+        const perJobCost: Balance = this.humanToken(taskBidPrice);
+        const humanTokenAmount = perJobCost.times(numberOfAnswers);
+
+        console.log(`Depositing ${humanTokenAmount.toCurrencyString()}`);
+        await this.jobContract
+            .sender(wallet)
+            .value(humanTokenAmount)
+            .gas(30_000_000)
+            .call.deposit();
+
+        await this.jobContract
+            .sender(wallet)
+            .gas(30_000_000)
             .call.setup(
                 reputationOracle,
                 recordingOracle,
-                reputationOracleStake,
-                recordingOracleStake,
-                manifestUrl,
-                manifestHash
+                oracleStake,
+                oracleStake,
+                url,
+                hash,
             );
+
         return { data: jobAddress.bech32() };
     }
 
     private async prepareJob(addressDto: AddressDto): Promise<void> {
-        prepareContract(addressDto, this.erdSys, this.jobContract);
+        await prepareContract(addressDto, this.erdSys, this.jobContract);
     }
 
     async launcher(addressDto: AddressDto): Promise<StringDataResponse> {
         await this.prepareJob(addressDto);
-        let launcherAddress: Address = await this.jobContract.call.launcher();
+        const launcherAddress: Address =
+            await this.jobContract.query.getLauncher();
         return { data: launcherAddress.bech32() };
     }
 
     async status(addressDto: AddressDto): Promise<JobStatusResponse> {
         await this.prepareJob(addressDto);
-        // TODO: figure out the type of status
-        let status: any = await this.jobContract.call.status();
-        /*Launched,
-            Pending,
-            Partial,
-            Paid,
-            Complete,
-            Cancelled,*/
+        const status: any = await this.jobContract.query.getStatus();
         return { status };
     }
 
     async manifestUrl(addressDto: AddressDto): Promise<StringDataResponse> {
         await this.prepareJob(addressDto);
-        let manifest = await this.jobContract.call.manifest();
-        return { data: manifest.url };
+        const { url } = await this.jobContract.query.getManifest();
+        return { data: url.toString() };
     }
 
     async manifestHash(addressDto: AddressDto): Promise<StringDataResponse> {
         await this.prepareJob(addressDto);
-        let manifest = await this.jobContract.call.manifest();
-        return { data: manifest.hash };
+        const { hash } = await this.jobContract.query.getManifest();
+        return { data: hash.toString() };
     }
 
     async balance(addressDto: AddressDto): Promise<IntDataResponse> {
         await this.prepareJob(addressDto);
-        return { data: await this.jobContract.call.getBalance() }
+        const rawBalance = await this.jobContract
+            .gas(30_000_000)
+            .call.getBalance();
+        const balance = this.humanToken.raw(rawBalance);
+        return { data: balance.valueOf().toNumber() };
     }
 
     async abort(addressDto: AddressDto): Promise<BoolDataResponse> {
         await this.prepareJob(addressDto);
-        await this.jobContract.call.abort();
+        await this.jobContract.gas(30_000_000).call.abort();
         return { success: true };
     }
 
     async cancel(addressDto: AddressDto): Promise<BoolDataResponse> {
         await this.prepareJob(addressDto);
-        await this.jobContract.call.cancel();
+        await this.jobContract.gas(30_000_000).call.cancel();
         return { success: true };
     }
 
     async complete(addressDto: AddressDto): Promise<BoolDataResponse> {
         await this.prepareJob(addressDto);
-        await this.jobContract.call.complete();
+        await this.jobContract.gas(30_000_000).call.complete();
         return { success: true };
     }
 
-    async getIntermediateResults(getResultsBody: GetResultsBody): Promise<StringDataResponse> {
+    async getIntermediateResults(
+        getResultsBody: GetResultsBody,
+    ): Promise<StringDataResponse> {
         await this.prepareJob(getResultsBody);
-        let results = await this.jobContract.call.getResults();
-        // TODO: parse results (resolve url?)
-        return results;
+        const { repOraclePrivate } = getResultsBody;
+        const { url } = await this.jobContract.query.getIntermediateResults();
+        const results = await this.storage.download(url.toString(), repOraclePrivate);
+        return { data: results };
     }
 
-    async storeIntermediateResults(storeJobIntermediateResultsBody: StoreJobIntermediateResultsBody): Promise<BoolDataResponse> {
+    async storeIntermediateResults(
+        storeJobIntermediateResultsBody: StoreJobIntermediateResultsBody,
+    ): Promise<BoolDataResponse> {
         await this.prepareJob(storeJobIntermediateResultsBody);
-        let { resultsUrl } = storeJobIntermediateResultsBody;
-        let hash = "TODO";
-        await this.jobContract.call.storeResults(resultsUrl, hash);
+        const { resultsUrl, repOraclePub } = storeJobIntermediateResultsBody;
+        const { hash, url } = await uploadFromUrl(
+            resultsUrl,
+            repOraclePub,
+            this.storage,
+        );
+        await this.jobContract.gas(30_000_000).call.storeResults(url, hash);
         return { success: true };
     }
 
-    async bulkPayout(bulkPayoutJobBody: BulkPayoutJobBody): Promise<BoolDataResponse> {
+    async bulkPayout(
+        bulkPayoutJobBody: BulkPayoutJobBody,
+    ): Promise<BoolDataResponse> {
         await this.prepareJob(bulkPayoutJobBody);
-        let { resultsUrl } = bulkPayoutJobBody;
-        let hash = "TODO";
-        let payments = "TODO"; // bulkPayoutJobBody.payoutsUrl
-        await this.jobContract.call.bulkPayOut(payments, resultsUrl, hash);
+        const { resultsUrl, repOraclePub, payoutsUrl } = bulkPayoutJobBody;
+        const { url, hash } = await uploadFromUrl(
+            resultsUrl,
+            repOraclePub,
+            this.storage,
+        );
+        const payoutsJson = await getJsonFromUrl(payoutsUrl);
+        const payouts = payoutsJson.map((address_value_pair) => {
+            const [address, value] = address_value_pair;
+            return [address, this.humanToken.value(value)];
+        });
+        await this.jobContract
+            .gas(30_000_000)
+            .call.bulkPayOut(payouts, { url, hash });
         return { success: true };
     }
 
-    async addTrustedHandlers(addJobTrustedHandlersBody: AddJobTrustedHandlersBody): Promise<BoolDataResponse> {
+    async addTrustedHandlers(
+        addJobTrustedHandlersBody: AddJobTrustedHandlersBody,
+    ): Promise<BoolDataResponse> {
         await this.prepareJob(addJobTrustedHandlersBody);
-        let { handlers } = addJobTrustedHandlersBody;
-        // TODO convert bech32 -> hex
-        await this.jobContract.call.addTrustedHandlers(handlers);
+        await this.jobContract
+            .gas(30_000_000)
+            .call.addTrustedHandlers(...addJobTrustedHandlersBody.handlers);
         return { success: true };
     }
 
-    async finalResults(getResultsBody: GetResultsBody): Promise<StringDataResponse> {
+    async finalResults(
+        getResultsBody: GetResultsBody,
+    ): Promise<StringDataResponse> {
         await this.prepareJob(getResultsBody);
-        return { data: await this.jobContract.call.getFinalResults() };
+        return { data: await this.jobContract.query.getFinalResults() };
     }
 }

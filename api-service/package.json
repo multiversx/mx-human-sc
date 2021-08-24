@@ -21,13 +21,17 @@
         "test:e2e": "jest --config ./test/jest-e2e.json"
     },
     "dependencies": {
-        "@elrondnetwork/erdjs": "github:ElrondNetwork/elrond-sdk-erdjs#development",
+        "@elrondnetwork/erdjs": "file:../../elrond-sdk-erdjs",
         "@nestjs/common": "^8.0.0",
+        "@nestjs/config": "^1.0.1",
         "@nestjs/core": "^8.0.0",
         "@nestjs/mapped-types": "^1.0.0",
         "@nestjs/platform-express": "^8.0.0",
         "@nestjs/swagger": "^5.0.9",
+        "@types/node-fetch": "^2.5.12",
+        "aws-sdk": "^2.965.0",
         "class-validator": "^0.13.1",
+        "eciesjs": "^0.3.11",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
         "rxjs": "^7.2.0",

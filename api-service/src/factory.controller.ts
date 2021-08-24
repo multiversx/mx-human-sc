@@ -6,17 +6,19 @@ import { FactoryGetBody } from 'model/models';
 import { StringDataResponse } from 'model/stringDataResponse';
 import { FactoryService } from './factory.service';
 
-@ApiTags("factory")
-@Controller("factory")
+@ApiTags('factory')
+@Controller('factory')
 export class FactoryController {
-    constructor(private readonly factoryService: FactoryService) { }
+    constructor(private readonly factoryService: FactoryService) {}
 
     /**
      * Returns addresses of all jobs deployed in the factory
      * Receive the list of all jobs in the factory
      */
     @Get()
-    public getFactory(@Query() factoryGetBody: FactoryGetBody): Promise<JobListResponse> {
+    public getFactory(
+        @Query() factoryGetBody: FactoryGetBody,
+    ): Promise<JobListResponse> {
         return this.factoryService.getFactory(factoryGetBody);
     }
 
@@ -24,7 +26,9 @@ export class FactoryController {
      * Creates a new factory and returns the address
      */
     @Post()
-    public newFactory(@Body() gasPayerDto: GasPayerDto): Promise<StringDataResponse> {
+    public newFactory(
+        @Body() gasPayerDto: GasPayerDto,
+    ): Promise<StringDataResponse> {
         return this.factoryService.newFactory(gasPayerDto);
     }
 }

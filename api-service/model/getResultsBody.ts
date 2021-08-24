@@ -4,6 +4,6 @@ import { AddressDto } from "./addressDto";
 
 export class GetResultsBody extends AddressDto {
     @IsNotEmpty()
-    @ApiProperty({ example: "testRepOraclePrivate", description: 'Private Key for the reputation oracle' })
+    @ApiProperty({ example: "testRepOraclePrivate", description: 'Reputation oracle secp256k1 private key' })
     repOraclePrivate: string;
 }

@@ -8,7 +8,7 @@ export class JobCreateBody extends GasPayerDto {
     factoryAddress: string;
 
     @IsNotEmpty()
-    @ApiProperty({ example: "testRepOraclePub", description: 'Address of the reputation oracle' })
+    @ApiProperty({ example: "testRepOraclePub", description: 'Reputation oracle secp256k1 public key' })
     repOraclePub: string;
 
     @IsNotEmpty()

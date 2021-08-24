@@ -4,7 +4,9 @@ import { ManifestValidityResponse } from 'model/manifestValidityResponse';
 
 @Injectable()
 export class ManifestService {
-    public validate(manifestValidityBody: ManifestValidityBody): Promise<ManifestValidityResponse> {
+    public validate(
+        manifestValidityBody: ManifestValidityBody,
+    ): Promise<ManifestValidityResponse> {
         throw new NotImplementedException();
     }
 }
