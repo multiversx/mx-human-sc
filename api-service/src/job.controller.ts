@@ -15,7 +15,7 @@ import { StoreJobIntermediateResultsBody } from 'model/storeJobIntermediateResul
 @ApiTags('job')
 @Controller('job')
 export class JobController {
-    constructor(private readonly jobService: JobService) { }
+    constructor(private readonly jobService: JobService) {}
 
     /**
      * Creates a new Job and returns the address

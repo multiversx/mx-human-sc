@@ -7,7 +7,7 @@ import * as crypto from 'crypto';
 @Injectable()
 export class StorageService implements OnModuleInit {
     s3: S3;
-    constructor(private config: ApiConfigService) { }
+    constructor(private config: ApiConfigService) {}
 
     onModuleInit() {
         this.s3 = new S3({
@@ -26,10 +26,13 @@ export class StorageService implements OnModuleInit {
             })
             .promise()
             .then((data) => {
-                const encryptedMessageBuffer = Buffer.from(data.Body.toString(), 'hex');
+                const encryptedMessageBuffer = Buffer.from(
+                    data.Body.toString(),
+                    'hex',
+                );
                 const decryptedMessageBuffer = eciesjs.decrypt(
                     privateKey,
-                    encryptedMessageBuffer
+                    encryptedMessageBuffer,
                 );
                 const message = Buffer.from(decryptedMessageBuffer).toString();
                 return message;
@@ -44,10 +47,16 @@ export class StorageService implements OnModuleInit {
         publicKey: string,
     ): Promise<{ hash: string; key: string }> {
         const messageBuffer = Buffer.from(msg);
-        const hash = crypto.createHash('sha1').update(messageBuffer).digest().toString('hex');
+        const hash = crypto
+            .createHash('sha1')
+            .update(messageBuffer)
+            .digest()
+            .toString('hex');
         const key = `s3${hash}`;
 
-        const encryptedMessage = eciesjs.encrypt(publicKey, messageBuffer).toString('hex');
+        const encryptedMessage = eciesjs
+            .encrypt(publicKey, messageBuffer)
+            .toString('hex');
         return await this.s3
             .upload({
                 Bucket: this.config.awsBucketName,

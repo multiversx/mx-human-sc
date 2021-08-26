@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApiConfigService {
-    constructor(private configService: ConfigService) { }
+    constructor(private configService: ConfigService) {}
 
     get awsBucketName(): string {
         return this.getChecked('AWS_BUCKETNAME');

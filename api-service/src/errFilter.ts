@@ -10,13 +10,11 @@ export class ErrFilter implements ExceptionFilter {
         const request = ctx.getRequest<Request>();
         const status = 400;
 
-        response
-            .status(status)
-            .json({
-                statusCode: status,
-                message: exception.message,
-                timestamp: new Date().toISOString(),
-                path: request.url,
-            });
+        response.status(status).json({
+            statusCode: status,
+            message: exception.message,
+            timestamp: new Date().toISOString(),
+            path: request.url,
+        });
     }
 }

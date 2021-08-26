@@ -17,7 +17,7 @@ export class FactoryService implements OnModuleInit {
     erdSys: SystemWrapper;
     factoryContract: ContractWrapper;
 
-    constructor(private config: ApiConfigService) { }
+    constructor(private config: ApiConfigService) {}
 
     async onModuleInit() {
         const { erdSys, factoryContract } = await loadContracts(this.config);

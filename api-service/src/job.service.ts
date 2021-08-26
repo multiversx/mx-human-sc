@@ -36,7 +36,7 @@ export class JobService implements OnModuleInit {
     constructor(
         private storage: StorageService,
         private config: ApiConfigService,
-    ) { }
+    ) {}
 
     async onModuleInit() {
         const { erdSys, jobContract, factoryContract, humanToken } =
@@ -157,7 +157,10 @@ export class JobService implements OnModuleInit {
         await this.prepareJob(getResultsBody);
         const { repOraclePrivate } = getResultsBody;
         const { url } = await this.jobContract.query.getIntermediateResults();
-        const results = await this.storage.download(url.toString(), repOraclePrivate);
+        const results = await this.storage.download(
+            url.toString(),
+            repOraclePrivate,
+        );
         return { data: results };
     }
 
@@ -212,7 +215,10 @@ export class JobService implements OnModuleInit {
         await this.prepareJob(getResultsBody);
         const { repOraclePrivate } = getResultsBody;
         const { url } = await this.jobContract.query.getFinalResults();
-        const results = await this.storage.download(url.toString(), repOraclePrivate);
+        const results = await this.storage.download(
+            url.toString(),
+            repOraclePrivate,
+        );
         return { data: results };
     }
 }
