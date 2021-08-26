@@ -74,7 +74,6 @@ export class JobService implements OnModuleInit {
         const perJobCost: Balance = this.humanToken(taskBidPrice);
         const humanTokenAmount = perJobCost.times(numberOfAnswers);
 
-        console.log(`Depositing ${humanTokenAmount.toCurrencyString()}`);
         await this.jobContract
             .sender(wallet)
             .value(humanTokenAmount)

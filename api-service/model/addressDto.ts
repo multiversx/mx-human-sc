@@ -1,9 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { IsAddress } from "validation/isAddress";
 import { GasPayerDto } from "./gasPayerDto";
 
 export class AddressDto extends GasPayerDto {
-    @IsNotEmpty()
+    @IsAddress()
     @ApiProperty({ example: "testJobAddress", description: 'Deployed job address' })
     address: string;
 }

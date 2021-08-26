@@ -31,7 +31,6 @@ export async function prepareContract(
     contract: ContractWrapper,
 ): Promise<void> {
     const wallet = await makeWallet(addressDto, erdSys);
-    console.log(`sender: ${wallet.address.bech32()}`);
     contract.address(addressDto.address).sender(wallet);
 }
 
@@ -54,7 +53,6 @@ export async function uploadFromUrl(
 ): Promise<{ hash: string; url: string; json: any }> {
     const json = await getJsonFromUrl(sourceUrl);
     const jsonString = JSON.stringify(json);
-    console.log(`Downloaded JSON: ${jsonString}`);
     const { hash, key: url } = await storage.upload(jsonString, pubKey);
     return { hash, url, json };
 }

@@ -1,12 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { IsAddress } from "validation/isAddress";
+import { IsWalletPrivateKeyHex } from "validation/isWalletPrivateKeyHex";
 
 export class GasPayerDto {
-    @IsNotEmpty()
+    @IsAddress()
     @ApiProperty({ example: "testGasPayer", description: 'Address paying for the gas costs' })
     gasPayer: string;
 
-    @IsNotEmpty()
+    @IsWalletPrivateKeyHex()
     @ApiProperty({ example: "testGasPayerPrivate", description: 'Private key for the address paying for the gas costs' })
     gasPayerPrivate: string;
 }

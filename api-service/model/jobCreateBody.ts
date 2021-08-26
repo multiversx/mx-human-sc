@@ -1,17 +1,19 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { IsUrl } from "class-validator";
+import { IsAddress } from "validation/isAddress";
+import { IsEciesPublicKey } from "validation/isEciesPublicKey";
 import { GasPayerDto } from "./gasPayerDto";
 
 export class JobCreateBody extends GasPayerDto {
-    @IsNotEmpty()
+    @IsAddress()
     @ApiProperty({ example: "testFactoryAddress", description: 'Address of the factory' })
     factoryAddress: string;
 
-    @IsNotEmpty()
-    @ApiProperty({ example: "testRepOraclePub", description: 'Reputation oracle secp256k1 public key' })
+    @IsEciesPublicKey()
+    @ApiProperty({ example: "testRepOraclePub", description: 'Reputation oracle ECIES public key' })
     repOraclePub: string;
 
-    @IsNotEmpty()
+    @IsUrl()
     @ApiProperty({ example: "http://example.com/manifest.json", description: 'Manifest URL' })
     manifestUrl: string;
 }
