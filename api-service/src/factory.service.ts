@@ -41,7 +41,7 @@ export class FactoryService implements OnModuleInit {
         const wallet = await makeWallet(gasPayerDto, this.erdSys);
         await this.factoryContract
             .sender(wallet)
-            .gas(30_000_000)
+            .gas(80_000_000)
             .call.deploy(
                 this.config.humanTokenIdentifier,
                 this.config.jobTemplateAddress,

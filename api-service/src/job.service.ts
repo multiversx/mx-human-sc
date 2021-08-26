@@ -53,7 +53,7 @@ export class JobService implements OnModuleInit {
         const jobAddress = await this.factoryContract
             .address(jobCreateBody.factoryAddress)
             .sender(wallet)
-            .gas(30_000_000)
+            .gas(130_000_000)
             .call.createJob();
         this.jobContract.address(jobAddress);
 
@@ -210,6 +210,9 @@ export class JobService implements OnModuleInit {
         getResultsBody: GetResultsBody,
     ): Promise<StringDataResponse> {
         await this.prepareJob(getResultsBody);
-        return { data: await this.jobContract.query.getFinalResults() };
+        const { repOraclePrivate } = getResultsBody;
+        const { url } = await this.jobContract.query.getFinalResults();
+        const results = await this.storage.download(url.toString(), repOraclePrivate);
+        return { data: results };
     }
 }
