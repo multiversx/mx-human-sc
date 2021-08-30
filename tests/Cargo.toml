@@ -26,4 +26,3 @@ optional = true
 
 [dev-dependencies.elrond-wasm-debug]
 version = "0.18.1"
-features = ["arwen-tests"]
