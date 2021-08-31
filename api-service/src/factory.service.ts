@@ -32,7 +32,7 @@ export class FactoryService implements OnModuleInit {
     async getFactory(factoryGetBody: FactoryGetBody): Promise<JobListResponse> {
         await this.prepareFactory(factoryGetBody);
         const jobs: Address[] = await this.factoryContract
-            .gas(40_000_000)
+            .gas(this.config.gasFactoryJobs)
             .call.jobs();
         return { jobs: jobs.map((address: Address) => address.bech32()) };
     }
@@ -41,7 +41,7 @@ export class FactoryService implements OnModuleInit {
         const wallet = await makeWallet(gasPayerDto, this.erdSys);
         await this.factoryContract
             .sender(wallet)
-            .gas(80_000_000)
+            .gas(this.config.gasFactoryDeploy)
             .call.deploy(
                 this.config.humanTokenIdentifier,
                 this.config.jobTemplateAddress,

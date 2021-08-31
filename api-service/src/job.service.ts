@@ -53,7 +53,7 @@ export class JobService implements OnModuleInit {
         const jobAddress = await this.factoryContract
             .address(jobCreateBody.factoryAddress)
             .sender(wallet)
-            .gas(130_000_000)
+            .gas(this.config.gasFactoryCreateJob)
             .call.createJob();
         this.jobContract.address(jobAddress);
 
@@ -77,12 +77,12 @@ export class JobService implements OnModuleInit {
         await this.jobContract
             .sender(wallet)
             .value(humanTokenAmount)
-            .gas(30_000_000)
+            .gas(this.config.gasJobDeposit)
             .call.deposit();
 
         await this.jobContract
             .sender(wallet)
-            .gas(30_000_000)
+            .gas(this.config.gasJobSetup)
             .call.setup(
                 reputationOracle,
                 recordingOracle,
@@ -126,28 +126,26 @@ export class JobService implements OnModuleInit {
 
     async balance(addressDto: AddressDto): Promise<IntDataResponse> {
         await this.prepareJob(addressDto);
-        const rawBalance = await this.jobContract
-            .gas(30_000_000)
-            .call.getBalance();
+        const rawBalance = await this.jobContract.query.getBalance();
         const balance = this.humanToken.raw(rawBalance);
         return { data: balance.valueOf().toNumber() };
     }
 
     async abort(addressDto: AddressDto): Promise<BoolDataResponse> {
         await this.prepareJob(addressDto);
-        await this.jobContract.gas(30_000_000).call.abort();
+        await this.jobContract.gas(this.config.gasJobAbort).call.abort();
         return { success: true };
     }
 
     async cancel(addressDto: AddressDto): Promise<BoolDataResponse> {
         await this.prepareJob(addressDto);
-        await this.jobContract.gas(30_000_000).call.cancel();
+        await this.jobContract.gas(this.config.gasJobCancel).call.cancel();
         return { success: true };
     }
 
     async complete(addressDto: AddressDto): Promise<BoolDataResponse> {
         await this.prepareJob(addressDto);
-        await this.jobContract.gas(30_000_000).call.complete();
+        await this.jobContract.gas(this.config.gasJobComplete).call.complete();
         return { success: true };
     }
 
@@ -174,7 +172,9 @@ export class JobService implements OnModuleInit {
             repOraclePub,
             this.storage,
         );
-        await this.jobContract.gas(30_000_000).call.storeResults(url, hash);
+        await this.jobContract
+            .gas(this.config.gasJobStoreResults)
+            .call.storeResults(url, hash);
         return { success: true };
     }
 
@@ -193,8 +193,11 @@ export class JobService implements OnModuleInit {
             const [address, value] = address_value_pair;
             return [address, this.humanToken.value(value)];
         });
+        const totalGas =
+            this.config.gasJobBulkPayOutBase +
+            payouts.length * this.config.gasJobBulkPayOutPerItem;
         await this.jobContract
-            .gas(30_000_000)
+            .gas(totalGas)
             .call.bulkPayOut(payouts, { url, hash });
         return { success: true };
     }
@@ -204,7 +207,7 @@ export class JobService implements OnModuleInit {
     ): Promise<BoolDataResponse> {
         await this.prepareJob(addJobTrustedHandlersBody);
         await this.jobContract
-            .gas(30_000_000)
+            .gas(this.config.gasJobAddTrustedHandlers)
             .call.addTrustedHandlers(...addJobTrustedHandlersBody.handlers);
         return { success: true };
     }

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApiConfigService {
-    constructor(private configService: ConfigService) {}
+    constructor(private configService: ConfigService) { }
 
     get awsBucketName(): string {
         return this.getChecked('AWS_BUCKETNAME');
@@ -37,8 +37,56 @@ export class ApiConfigService {
         return this.getChecked('JOB_TEMPLATE_ADDRESS');
     }
 
-    getChecked(key: string): string {
-        const value = this.configService.get<string>(key);
+    get gasFactoryJobs(): number {
+        return this.getChecked('GAS_FACTORY_JOBS');
+    }
+
+    get gasFactoryDeploy(): number {
+        return this.getChecked('GAS_FACTORY_DEPLOY');
+    }
+
+    get gasFactoryCreateJob(): number {
+        return this.getChecked('GAS_FACTORY_CREATE_JOB');
+    }
+
+    get gasJobDeposit(): number {
+        return this.getChecked('GAS_JOB_DEPOSIT');
+    }
+
+    get gasJobSetup(): number {
+        return this.getChecked('GAS_JOB_SETUP');
+    }
+
+    get gasJobAbort(): number {
+        return this.getChecked('GAS_JOB_ABORT');
+    }
+
+    get gasJobCancel(): number {
+        return this.getChecked('GAS_JOB_CANCEL');
+    }
+
+    get gasJobComplete(): number {
+        return this.getChecked('GAS_JOB_COMPLETE');
+    }
+
+    get gasJobStoreResults(): number {
+        return this.getChecked('GAS_JOB_STORE_RESULTS');
+    }
+
+    get gasJobBulkPayOutBase(): number {
+        return this.getChecked('GAS_JOB_BULK_PAYOUT_BASE');
+    }
+
+    get gasJobBulkPayOutPerItem(): number {
+        return this.getChecked('GAS_JOB_BULK_PAYOUT_PER_ITEM');
+    }
+
+    get gasJobAddTrustedHandlers(): number {
+        return this.getChecked('GAS_JOB_ADD_TRUSTED_HANDLERS');
+    }
+
+    getChecked<T>(key: string): T {
+        const value = this.configService.get<T>(key);
         if (value == undefined) {
             throw new Error(`Missing required configuration for ${key}`);
         }
