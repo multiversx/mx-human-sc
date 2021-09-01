@@ -14,9 +14,6 @@ export function isWalletPrivateKeyHex(value: unknown): boolean {
     }
 }
 
-/**
- * Checks if a value is a wallet private key.
- */
 export function IsWalletPrivateKeyHex(validationOptions?: ValidationOptions): PropertyDecorator {
     return ValidateBy(
         {

@@ -14,9 +14,6 @@ export function isAddress(value: unknown): boolean {
     }
 }
 
-/**
- * Checks if a value is an address.
- */
 export function IsAddress(validationOptions?: ValidationOptions): PropertyDecorator {
     return ValidateBy(
         {

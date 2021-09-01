@@ -7,11 +7,8 @@ import { ManifestService } from './manifest.service';
 @ApiTags('manifest')
 @Controller('manifest')
 export class ManifestController {
-    constructor(private readonly manifestService: ManifestService) {}
+    constructor(private readonly manifestService: ManifestService) { }
 
-    /**
-     * Validates a manifest provided by a public URL
-     */
     @Get('validate')
     public validate(
         @Query() manifestValidityBody: ManifestValidityBody,

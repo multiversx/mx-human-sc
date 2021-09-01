@@ -14,9 +14,6 @@ export function isEciesPublicKey(value: unknown): boolean {
     }
 }
 
-/**
- * Checks if a value is an ECIES public key.
- */
 export function IsEciesPublicKey(validationOptions?: ValidationOptions): PropertyDecorator {
     return ValidateBy(
         {
