@@ -1,4 +1,6 @@
 [workspace]
 members = [
-  "tests"
+  "tests",
+  "job/abi",
+  "job-factory/abi"
 ]

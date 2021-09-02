@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -ex
+cd api-service
+npm run start:dev

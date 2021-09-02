@@ -35,7 +35,7 @@
                 "from": "address:recording-oracle",
                 "to": "sc:job-1",
                 "value": "0",
-                "function": "status",
+                "function": "getStatus",
                 "arguments": [],
                 "gasLimit": "50,000,000",
                 "gasPrice": "0"

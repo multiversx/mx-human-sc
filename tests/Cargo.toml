@@ -15,18 +15,14 @@ path = "../job"
 path = "../job-factory"
 
 [dependencies.elrond-wasm]
-version = "0.17"
-path = "../../elrond-wasm-rs/elrond-wasm"
+version = "0.18.1"
 
 [dependencies.elrond-wasm-derive]
-version = "0.17"
-path = "../../elrond-wasm-rs/elrond-wasm-derive"
+version = "0.18.1"
 
 [dependencies.elrond-wasm-node]
-version = "0.17"
-path = "../../elrond-wasm-rs/elrond-wasm-node"
+version = "0.18.1"
 optional = true
 
 [dev-dependencies.elrond-wasm-debug]
-version = "0.17"
-path = "../../elrond-wasm-rs/elrond-wasm-debug"
+version = "0.18.1"

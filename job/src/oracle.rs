@@ -8,7 +8,7 @@ pub struct Oracle<BigUint: BigUintApi> {
 }
 
 #[derive(TopEncode, TopDecode, TypeAbi)]
-pub struct Oracles<BigUint: BigUintApi> {
+pub struct OraclePair<BigUint: BigUintApi> {
     pub reputation: Oracle<BigUint>,
     pub recording: Oracle<BigUint>,
 }

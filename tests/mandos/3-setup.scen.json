@@ -32,8 +32,9 @@
                 "logs": [
                     {
                         "address": "sc:job-1",
-                        "identifier": "str:pending",
+                        "endpoint": "str:setup",
                         "topics": [
+                            "str:pending",
                             "str:https://example.com",
                             "str:test-hash"
                         ],
@@ -93,15 +94,16 @@
                     "balance": "1,000",
                     "storage": {
                         "str:token": "str:EGLD",
+                        "str:launcher": "sc:job-factory",
                         "str:canceler": "address:requester",
                         "str:expiration": "42,008,640,000",
                         "str:trusted_handlers.info": "u32:4|u32:1|u32:4|u32:4",
                         "str:trusted_handlers.node_links|u32:1": "u32:0|u32:2",
-                        "str:trusted_handlers.node_id|address:requester": "1",
-                        "str:trusted_handlers.value|u32:1": "address:requester",
+                        "str:trusted_handlers.node_id|sc:job-factory": "1",
+                        "str:trusted_handlers.value|u32:1": "sc:job-factory",
                         "str:trusted_handlers.node_links|u32:2": "u32:1|u32:3",
-                        "str:trusted_handlers.node_id|sc:job-factory": "2",
-                        "str:trusted_handlers.value|u32:2": "sc:job-factory",
+                        "str:trusted_handlers.node_id|address:requester": "2",
+                        "str:trusted_handlers.value|u32:2": "address:requester",
                         "str:trusted_handlers.node_links|u32:3": "u32:2|u32:4",
                         "str:trusted_handlers.node_id|address:recording-oracle": "3",
                         "str:trusted_handlers.value|u32:3": "address:recording-oracle",

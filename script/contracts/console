@@ -1,0 +1,3 @@
+#!/bin/sh
+
+node --experimental-repl-await --require ./script/contracts/console.js

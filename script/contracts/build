@@ -1,0 +1,4 @@
+#!/bin/sh
+
+erdpy --verbose contract build job
+erdpy --verbose contract build job-factory

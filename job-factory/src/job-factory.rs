@@ -2,7 +2,7 @@
 
 elrond_wasm::imports!();
 
-#[elrond_wasm_derive::contract]
+#[elrond_wasm::contract]
 pub trait Factory {
     #[init]
     fn init(&self, token: TokenIdentifier, job_template_address: Address) {
@@ -51,7 +51,7 @@ pub trait Factory {
 
     #[view]
     #[storage_mapper("jobs")]
-    fn jobs(&self) -> SetMapper<Self::Storage, Address>;
+    fn jobs(&self) -> SafeSetMapper<Self::Storage, Address>;
 
     #[view]
     #[storage_mapper("token")]

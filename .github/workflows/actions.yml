@@ -12,47 +12,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          repository: 'ElrondNetwork/elrond-wasm-rs'
-          ref: 'deploy-from-source-contract'
-          path: 'elrond-wasm-rs'
-      - uses: actions/checkout@v2
-        with:
-          path: 'sc-human-rs'
       - uses: actions-rs/toolchain@v1
         with:
           default: true
           toolchain: nightly
       - name: Install erdpy and arwentools
-        run : |
-          source sc-human-rs/.github/workflows/env
+        run: |
+          source .github/workflows/env
           pip3 install erdpy
           mkdir $HOME/elrondsdk
-          erdpy config set dependencies.arwentools.tag v1.4.1
+          erdpy config set dependencies.arwentools.tag v1.4.8
           erdpy deps install arwentools
       - name: Build the wasm contracts
         run: |
-          source sc-human-rs/.github/workflows/env
-          cd sc-human-rs && ./build-wasm.sh
+          source .github/workflows/env
+          ./build-wasm.sh
       - name: Run Arwen tests
         run: |
-          source sc-human-rs/.github/workflows/env
-          cd sc-human-rs && cargo test --features elrond-wasm-debug/arwen-tests
+          source .github/workflows/env
+          cargo test --features elrond-wasm-debug/arwen-tests
   rust_test:
     name: Rust tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          repository: 'ElrondNetwork/elrond-wasm-rs'
-          ref: 'deploy-from-source-contract'
-          path: 'elrond-wasm-rs'
-      - uses: actions/checkout@v2
-        with:
-          path: 'sc-human-rs'
       - uses: actions-rs/toolchain@v1
         with:
           default: true
           toolchain: nightly
       - name: Run rust tests
-        run: cd sc-human-rs && cargo test
+        run: cargo test
+  clippy_check:
+    name: Clippy linter check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          default: true
+      - uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

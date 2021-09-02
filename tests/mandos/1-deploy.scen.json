@@ -134,6 +134,7 @@
                     "balance": "0",
                     "storage": {
                         "str:token": "str:EGLD",
+                        "str:launcher": "address:owner",
                         "str:canceler": "address:owner",
                         "str:expiration": "42,000,000,000",
                         "str:trusted_handlers.info": "u32:1|u32:1|u32:1|u32:1",
