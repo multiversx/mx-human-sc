@@ -1,6 +1,6 @@
 [workspace]
+
 members = [
-  "tests",
-  "job/abi",
-  "job-factory/abi"
+  "job",
+  "job/meta",
 ]

@@ -8,7 +8,9 @@ pub struct Oracle<M: ManagedTypeApi> {
 }
 
 impl<M: ManagedTypeApi> Oracle<M> {
-    pub fn new(address: ManagedAddress<M>, stake: BigUint<M>) -> Self { Self { address, stake } }
+    pub fn new(address: ManagedAddress<M>, stake: BigUint<M>) -> Self {
+        Self { address, stake }
+    }
 }
 
 #[derive(TopEncode, TopDecode, TypeAbi)]
@@ -31,5 +33,14 @@ impl<M: ManagedTypeApi> OraclePair<M> {
     }
 }
 
+#[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, TypeAbi)]
+pub struct UrlHashPair<M: ManagedTypeApi> {
+    pub url: ManagedBuffer<M>,
+    pub hash: ManagedBuffer<M>,
+}
 
-
+impl<M: ManagedTypeApi> UrlHashPair<M> {
+    pub fn new(url: ManagedBuffer<M>, hash: ManagedBuffer<M>) -> Self {
+        Self { url, hash }
+    }
+}
