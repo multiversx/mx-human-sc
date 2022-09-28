@@ -11,6 +11,7 @@ elrond_wasm_node::wasm_endpoints! {
         bulkPayOut
         cancel
         complete
+        deposit
         getBalance
         getExpiration
         getFinalResults

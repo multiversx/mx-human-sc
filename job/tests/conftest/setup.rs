@@ -39,7 +39,8 @@ where
     let init_contract = |sc: ContractObj<TxContextRef>| {
         let token = managed_token_id!(HMT_TOKEN);
         let canceller = managed_address!(&owner_address);
-        let trusted_callers = MultiValueEncoded::new();
+        let mut trusted_callers = MultiValueEncoded::new();
+        trusted_callers.push(managed_address!(&owner_address));
         sc.init(
             EgldOrEsdtTokenIdentifier::esdt(token),
             canceller,

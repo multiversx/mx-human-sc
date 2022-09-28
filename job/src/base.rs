@@ -7,7 +7,7 @@ use crate::constants::UrlHashPair;
 
 
 #[elrond_wasm::module]
-pub trait JobBase {
+pub trait JobBaseModule {
 
     fn init_base(
         &self,
@@ -54,6 +54,17 @@ pub trait JobBase {
             allowed_statuses.iter().any(|status| current_status == *status),
             "Wrong contract status"
         )
+    }
+
+    #[endpoint]
+    #[payable("*")]
+    fn deposit(&self){
+        self.require_trusted();
+        self.require_not_expired();
+        self.required_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
+
+        let (token, _, _) = self.call_value().egld_or_single_esdt().into_tuple();
+        require!(token == self.token().get(), "Wrong payment token");
     }
 
     #[view(getBalance)]

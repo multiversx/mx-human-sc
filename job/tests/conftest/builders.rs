@@ -15,3 +15,4 @@ where
     // Contract specific properties
     pub owner_address: Address,
 }
+

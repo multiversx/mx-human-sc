@@ -9,10 +9,8 @@ use status::EscrowStatus;
 use constants::OraclePair;
 use constants::UrlHashPair;
 
-
-/// An empty contract. To be used as a template when starting a new contract from scratch.
 #[elrond_wasm::contract]
-pub trait JobContract: base::JobBase {
+pub trait JobContract: base::JobBaseModule {
 
     #[init]
     fn init(
@@ -72,13 +70,12 @@ pub trait JobContract: base::JobBase {
     #[endpoint]
     fn abort(&self) -> () {
         self.require_not_status(&[EscrowStatus::Complete, EscrowStatus::Paid]);
-
         let balance: BigUint = self.get_balance();
         if balance != 0 {
             self.cancel()
+        } else {
+            self.status().set(EscrowStatus::Cancelled)
         }
-
-        self.status().set(EscrowStatus::Cancelled);
     }
 
     #[endpoint]
