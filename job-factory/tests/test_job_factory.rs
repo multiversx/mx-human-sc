@@ -15,14 +15,14 @@ fn test_deploy_job() {
     let owner_address = &setup.owner_address;
 
     let dummy_addr = factory_wrapper.address_ref().clone();
-    let _job_1 = blockchain_wrapper.prepare_deploy_from_sc(&dummy_addr, job::contract_obj);
+    blockchain_wrapper.prepare_deploy_from_sc(&dummy_addr, job::contract_obj);
 
     blockchain_wrapper
         .execute_tx(owner_address, &factory_wrapper, &rust_biguint!(0u64), |sc| {
             let mut trusted_handlers = MultiValueEncoded::new();
             trusted_handlers.push(managed_address!(owner_address));
-            let job_address = sc.create_job(trusted_handlers);
-            let result = sc.has_job(job_address);
+            let new_job_contract_address = sc.create_job(trusted_handlers);
+            let result = sc.has_job(new_job_contract_address);
 
             assert_eq!(result, true);
         })
