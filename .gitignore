@@ -13,3 +13,7 @@ node_modules
 
 api-service/dist
 package-lock.json
+
+# VSCode
+.vscode
+.vscode/*

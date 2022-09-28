@@ -48,8 +48,7 @@ Setup
 ===
 
 ```bash
-script/contracts/build
-script/contracts/bootstrap
+make setup
 ```
 
 Deploying on the local testnet
