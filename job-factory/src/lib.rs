@@ -23,7 +23,7 @@ pub trait JobFactoryContract {
         let mut arguments = ManagedArgBuffer::new();
         arguments.push_arg(job_token);
         arguments.push_arg(canceller);
-        arguments.push_arg(&JOB_CONTRACT_DURATION.to_be_bytes());
+        arguments.push_arg(JOB_CONTRACT_DURATION.to_be_bytes());
         for trusted_handler in trusted_handlers {
             arguments.push_arg(trusted_handler);
         }

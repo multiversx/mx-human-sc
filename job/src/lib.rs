@@ -40,7 +40,7 @@ pub trait JobContract: base::JobBaseModule {
         require!(self.status().get() == EscrowStatus::Launched, "Contract is not launched");
 
         let total_stake = &reputation_oracle_stake + &recording_oracle_stake;
-        require!(total_stake <= 100 as u64, "Stake out of bounds");
+        require!(total_stake <= 100_u64, "Stake out of bounds");
 
         self.oracle_pair().set(&OraclePair::new(
             &reputation_oracle,
@@ -51,7 +51,7 @@ pub trait JobContract: base::JobBaseModule {
 
         self.trusted_callers().insert(recording_oracle);
         self.trusted_callers().insert(reputation_oracle);
-        self.manifest().set(&UrlHashPair::new(url.clone(), hash.clone()));
+        self.manifest().set(&UrlHashPair::new(url, hash));
         self.status().set(EscrowStatus::Pending);
         // self.pending_event(url, hash);
     }
@@ -113,7 +113,7 @@ pub trait JobContract: base::JobBaseModule {
         original_amount: &BigUint,
         percentage: &BigUint,
     ) -> (BigUint, BigUint) {
-        let transferred_amount = original_amount * percentage / BigUint::from(100 as u64);
+        let transferred_amount = original_amount * percentage / BigUint::from(100_u64);
         from_amount -= &transferred_amount;
         to_amount += &transferred_amount;
         (from_amount, to_amount)
@@ -163,4 +163,5 @@ pub trait JobContract: base::JobBaseModule {
 
     #[storage_mapper("canceller")]
     fn canceller(&self) -> SingleValueMapper<ManagedAddress>;
+
 }

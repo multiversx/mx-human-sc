@@ -33,7 +33,7 @@ impl<M: ManagedTypeApi> OraclePair<M> {
     }
 }
 
-#[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, TypeAbi, Debug, PartialEq)]
+#[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, TypeAbi, Debug, PartialEq, Eq)]
 pub struct UrlHashPair<M: ManagedTypeApi> {
     pub url: ManagedBuffer<M>,
     pub hash: ManagedBuffer<M>,
