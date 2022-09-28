@@ -1,7 +1,7 @@
 mod conftest;
 
 use conftest::*;
-use elrond_wasm::types::ManagedAddress;
+use elrond_wasm::{types::{ManagedAddress, MultiValueEncoded, BigUint}, elrond_codec::multi_types::OptionalValue};
 use elrond_wasm_debug::{
     rust_biguint,
     managed_address,
@@ -152,4 +152,108 @@ fn test_job_abort() {
             sc.abort()
         })
         .assert_ok();
+}
+
+#[test]
+fn test_bulk_payout_partial() {
+    let mut setup = setup_contract(contract_obj);
+    let blockchain_wrapper = &mut setup.blockchain_wrapper;
+    let contract_wrapper = &setup.contract_wrapper;
+    let owner_address = &setup.owner_address;
+    let reputation_oracle = blockchain_wrapper.create_user_account(&rust_biguint!(0u64));
+    let recording_oracle = blockchain_wrapper.create_user_account(&rust_biguint!(0u64));
+    let test_url = b"http://example.com";
+    let test_hash = b"test-hash";
+
+    blockchain_wrapper.set_esdt_balance(contract_wrapper.address_ref(), HMT_TOKEN, &rust_biguint!(100u64));
+    blockchain_wrapper
+    .execute_tx(&owner_address, &contract_wrapper, &rust_biguint!(0u64), |sc|{
+        let rep_oracle_address = managed_address!(&reputation_oracle);
+        let rec_oracle_address = managed_address!(&recording_oracle);
+
+        sc.setup(
+            rep_oracle_address,
+            managed_biguint!(5u64),
+            rec_oracle_address,
+            managed_biguint!(7u64),
+            managed_buffer!(b"http://example.com"),
+            managed_buffer!(b"test-hash")
+        );
+
+        let new_callers: Vec<ManagedAddress<TxContextRef>> = vec![managed_address!(&reputation_oracle), managed_address!(&recording_oracle)];
+        let has_all_callers = new_callers.iter().all(|caller| sc.trusted_callers().contains(caller));
+
+        assert!(has_all_callers);
+    })
+    .assert_ok();
+
+    blockchain_wrapper.execute_tx(owner_address, contract_wrapper, &rust_biguint!(0u64), |sc| {
+        let mut payments: MultiValueEncoded<TxContextRef, (ManagedAddress<TxContextRef>, BigUint<TxContextRef>)> = MultiValueEncoded::new();
+        payments.push((managed_address!(&reputation_oracle), managed_biguint!(40u64)));
+        payments.push((managed_address!(&recording_oracle), managed_biguint!(50u64)));
+        let final_results: UrlHashPair<TxContextRef> = UrlHashPair::new(managed_buffer!(test_url), managed_buffer!(test_hash));
+
+        sc.bulk_pay_out(payments, OptionalValue::Some(final_results));
+    }).assert_ok();
+
+    blockchain_wrapper.execute_query(contract_wrapper, |sc| {
+        let current_status = sc.status().get();
+        let expected_status = EscrowStatus::Partial;
+
+        assert_eq!(current_status, expected_status);
+    }).assert_ok()
+}
+
+#[test]
+fn test_bulk_payout_full() {
+    let mut setup = setup_contract(contract_obj);
+    let blockchain_wrapper = &mut setup.blockchain_wrapper;
+    let contract_wrapper = &setup.contract_wrapper;
+    let owner_address = &setup.owner_address;
+    let reputation_oracle = blockchain_wrapper.create_user_account(&rust_biguint!(0u64));
+    let recording_oracle = blockchain_wrapper.create_user_account(&rust_biguint!(0u64));
+    let test_url = b"http://example.com";
+    let test_hash = b"test-hash";
+    let contract_balance = rust_biguint!(100u64);
+
+    blockchain_wrapper.set_esdt_balance(contract_wrapper.address_ref(), HMT_TOKEN, &contract_balance);
+    blockchain_wrapper
+        .execute_tx(&owner_address, &contract_wrapper, &rust_biguint!(0u64), |sc|{
+            let rep_oracle_address = managed_address!(&reputation_oracle);
+            let rec_oracle_address = managed_address!(&recording_oracle);
+
+            sc.setup(
+                rep_oracle_address,
+                managed_biguint!(5u64),
+                rec_oracle_address,
+                managed_biguint!(7u64),
+                managed_buffer!(b"http://example.com"),
+                managed_buffer!(b"test-hash")
+            );
+
+            let new_callers: Vec<ManagedAddress<TxContextRef>> = vec![managed_address!(&reputation_oracle), managed_address!(&recording_oracle)];
+            let has_all_callers = new_callers.iter().all(|caller| sc.trusted_callers().contains(caller));
+
+            assert!(has_all_callers);
+        })
+        .assert_ok();
+
+    blockchain_wrapper
+        .execute_tx(owner_address, contract_wrapper, &rust_biguint!(0u64), |sc| {
+            let mut payments: MultiValueEncoded<TxContextRef, (ManagedAddress<TxContextRef>, BigUint<TxContextRef>)> = MultiValueEncoded::new();
+            payments.push((managed_address!(&reputation_oracle), managed_biguint!(50u64)));
+            payments.push((managed_address!(&recording_oracle), managed_biguint!(50u64)));
+            let final_results: UrlHashPair<TxContextRef> = UrlHashPair::new(managed_buffer!(test_url), managed_buffer!(test_hash));
+
+            sc.bulk_pay_out(payments, OptionalValue::Some(final_results));
+        })
+        .assert_ok();
+
+    blockchain_wrapper
+        .execute_query(contract_wrapper, |sc| {
+            let current_status = sc.status().get();
+            let expected_status = EscrowStatus::Paid;
+
+            assert_eq!(current_status, expected_status);
+        }).assert_ok()
 }

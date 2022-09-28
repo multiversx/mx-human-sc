@@ -42,10 +42,10 @@ pub trait JobBaseModule {
 
     fn require_not_status(&self, disallowed_statuses: &[EscrowStatus]) {
         let current_status = self.status().get();
-        require!(
-            !disallowed_statuses.iter().any(|status| current_status == *status),
-            "Wrong status"
-        );
+        for status in disallowed_statuses.into_iter() {
+            let is_status = status == &current_status;
+            require!(!is_status, "Contract has wrong status")
+        }
     }
 
     fn required_status(&self, allowed_statuses: &[EscrowStatus]) {

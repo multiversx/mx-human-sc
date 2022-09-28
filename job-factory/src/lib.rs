@@ -4,15 +4,15 @@ elrond_wasm::imports!();
 const JOB_CONTRACT_DURATION: u64 = 100 * 24 * 60 * 60;  // 100 days
 
 #[elrond_wasm::contract]
-pub trait FactoryContract {
+pub trait JobFactoryContract {
     #[init]
     fn init(
         &self,
         token: EgldOrEsdtTokenIdentifier,
         job_template_address: ManagedAddress
     ) {
-        self.token().set(&token);
-        self.job_template_address().set(&job_template_address);
+        self.token().set(token);
+        self.job_template_address().set(job_template_address);
     }
 
     #[endpoint(createJob)]
@@ -48,7 +48,6 @@ pub trait FactoryContract {
     }
 
     // storage
-
     #[storage_mapper("job_template_address")]
     fn job_template_address(&self) -> SingleValueMapper<ManagedAddress>;
 

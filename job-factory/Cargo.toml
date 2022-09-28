@@ -19,3 +19,6 @@ version = "0.35.0"
 
 [dev-dependencies.elrond-wasm-debug]
 version = "0.35.0"
+
+[dependencies.job]
+path = "../job"
