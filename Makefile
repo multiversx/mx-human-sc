@@ -1,12 +1,16 @@
-all: build-contracts
+all: clean build
 
 build:
-	./script/contracts/build
+	erdpy --verbose contract build job
+	erdpy --verbose contract build job-factory
+
+clean:
+	./clean-wasm.sh
 
 bootstrap:
 	./script/contracts/bootstrap
 
-setup: build bootstrap
+setup: clean build
 
 test-job:
 	cargo test --package job

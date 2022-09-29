@@ -21,7 +21,6 @@ Scripts
 ## Contract scripts
 
 - `script/contracts/bootstrap` - set up the required dependencies
-- `script/contracts/build` - build the job and job-factory smart contracts and their ABIs
 - `script/contracts/console` - start a node console which may be used to interact with the blockchain
 
 ## API service scripts
@@ -49,6 +48,32 @@ Setup
 
 ```bash
 make setup
+```
+
+## Setup clean
+Only if you want to clean your builds
+```bash
+make clean
+```
+
+Test
+===
+
+To run all the tests use the command:
+```bash
+make test
+```
+
+For running individual tests you have two commands:
+
+- `job` contract
+```bash
+make test-job
+```
+
+- `job-factory` contract
+```bash
+make test-job-factory
 ```
 
 Deploying on the local testnet
