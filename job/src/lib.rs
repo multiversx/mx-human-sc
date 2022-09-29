@@ -29,8 +29,8 @@ pub trait JobContract: base::JobBaseModule {
     fn setup(
         &self,
         reputation_oracle: ManagedAddress,
-        reputation_oracle_stake: BigUint,
         recording_oracle: ManagedAddress,
+        reputation_oracle_stake: BigUint,
         recording_oracle_stake: BigUint,
         url: ManagedBuffer,
         hash: ManagedBuffer,
@@ -51,14 +51,14 @@ pub trait JobContract: base::JobBaseModule {
 
         self.trusted_callers().insert(recording_oracle);
         self.trusted_callers().insert(reputation_oracle);
-        self.manifest().set(&UrlHashPair::new(url, hash));
+        self.manifest().set(&UrlHashPair::new(url.clone(), hash.clone()));
         self.status().set(EscrowStatus::Pending);
-        // self.pending_event(url, hash);
+        self.pending_event(url, hash);
     }
 
     #[endpoint]
-    fn cancel(&self) -> () {
-        self.require_not_status(&[EscrowStatus::Complete, EscrowStatus::Paid]);
+    fn cancel(&self) {
+        self.require_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
         self.require_not_broke();
 
         let balance: BigUint = self.get_balance();
@@ -69,7 +69,7 @@ pub trait JobContract: base::JobBaseModule {
 
     #[endpoint]
     fn abort(&self) -> () {
-        self.require_not_status(&[EscrowStatus::Complete, EscrowStatus::Paid]);
+        self.require_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
         let balance: BigUint = self.get_balance();
         if balance != 0 {
             self.cancel()
@@ -79,10 +79,10 @@ pub trait JobContract: base::JobBaseModule {
     }
 
     #[endpoint]
-    fn complete(&self) -> () {
+    fn complete(&self) {
         self.require_trusted();
         self.require_not_expired();
-        self.required_status(&[EscrowStatus::Paid]);
+        self.require_status(&[EscrowStatus::Paid]);
         self.status().set(EscrowStatus::Complete);
     }
 
@@ -90,7 +90,7 @@ pub trait JobContract: base::JobBaseModule {
     fn store_results(&self, url: ManagedBuffer, hash: ManagedBuffer) {
         self.require_trusted();
         self.require_not_expired();
-        self.required_status(&[EscrowStatus::Pending, EscrowStatus::Partial]);
+        self.require_status(&[EscrowStatus::Pending, EscrowStatus::Partial]);
         self.intermediate_results().set(UrlHashPair::new(url, hash));
     }
 
@@ -127,8 +127,17 @@ pub trait JobContract: base::JobBaseModule {
     ) {
         self.require_trusted();
         self.require_not_expired();
-        self.require_not_status(&[EscrowStatus::Paid, EscrowStatus::Launched]);
+        self.require_status(&[EscrowStatus::Pending, EscrowStatus::Partial]);
         self.require_not_broke();
+        self.require_max_recipients(payments.len());
+
+        let mut payments_total = BigUint::zero();
+        for (_, amount) in payments.clone() {
+            payments_total += amount;
+        }
+
+        self.require_payments_not_zero(&payments_total);
+        self.require_sufficient_balance(&payments_total);
 
         let token = self.token().get();
         let oracles = self.oracle_pair().get();
@@ -164,4 +173,6 @@ pub trait JobContract: base::JobBaseModule {
     #[storage_mapper("canceller")]
     fn canceller(&self) -> SingleValueMapper<ManagedAddress>;
 
+    #[event("pending")]
+    fn pending_event(&self, #[indexed] url: ManagedBuffer, #[indexed] hash: ManagedBuffer);
 }

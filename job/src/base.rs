@@ -5,6 +5,7 @@ use crate::status::EscrowStatus;
 use crate::constants::OraclePair;
 use crate::constants::UrlHashPair;
 
+const BULK_MAX_COUNT: usize = 100;
 
 #[elrond_wasm::module]
 pub trait JobBaseModule {
@@ -40,20 +41,28 @@ pub trait JobBaseModule {
         require!(self.expiration().get() > self.blockchain().get_block_timestamp(), "Contract expired");
     }
 
-    fn require_not_status(&self, disallowed_statuses: &[EscrowStatus]) {
-        let current_status = self.status().get();
-        for status in disallowed_statuses.iter() {
-            let is_status = status == &current_status;
-            require!(!is_status, "Contract has wrong status")
-        }
-    }
-
-    fn required_status(&self, allowed_statuses: &[EscrowStatus]) {
+    fn require_status(&self, allowed_status: &[EscrowStatus]) {
         let current_status = self.status().get();
         require!(
-            allowed_statuses.iter().any(|status| current_status == *status),
-            "Wrong contract status"
-        )
+            allowed_status
+                .iter()
+                .any(|status| current_status == *status),
+            "Wrong status"
+        );
+    }
+
+    fn require_sufficient_balance(&self, payments_total: &BigUint){
+        let current_balance = self.get_balance();
+
+        require!(payments_total <= &current_balance, "Not enough funds for payment");
+    }
+
+    fn require_payments_not_zero(&self, payments_total: &BigUint) {
+        require!(payments_total > &BigUint::zero(), "Cannot process payments with 0 amount")
+    }
+
+    fn require_max_recipients(&self, recipients: usize) {
+        require!(recipients < BULK_MAX_COUNT, "Too many recipients");
     }
 
     #[endpoint]
@@ -61,10 +70,18 @@ pub trait JobBaseModule {
     fn deposit(&self){
         self.require_trusted();
         self.require_not_expired();
-        self.required_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
+        self.require_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
 
         let (token, _, _) = self.call_value().egld_or_single_esdt().into_tuple();
         require!(token == self.token().get(), "Wrong payment token");
+    }
+
+    #[endpoint(addTrustedHandlers)]
+    fn add_trusted_handlers(&self, trusted_handlers: MultiValueEncoded<ManagedAddress>) {
+        self.require_trusted();
+        for caller in trusted_handlers {
+            self.trusted_callers().insert(caller.clone());
+        }
     }
 
     #[view(getBalance)]

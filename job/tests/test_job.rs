@@ -32,8 +32,8 @@ fn test_job_setup() {
 
             sc.setup(
                 rep_oracle_address,
-                managed_biguint!(5u64),
                 rec_oracle_address,
+                managed_biguint!(5u64),
                 managed_biguint!(7u64),
                 managed_buffer!(b"http://example.com"),
                 managed_buffer!(b"test-hash")
@@ -165,7 +165,7 @@ fn test_bulk_payout_partial() {
     let test_url = b"http://example.com";
     let test_hash = b"test-hash";
 
-    blockchain_wrapper.set_esdt_balance(contract_wrapper.address_ref(), HMT_TOKEN, &rust_biguint!(100u64));
+    blockchain_wrapper.set_esdt_balance(contract_wrapper.address_ref(), HMT_TOKEN, &rust_biguint!(10u64));
     blockchain_wrapper
     .execute_tx(&owner_address, &contract_wrapper, &rust_biguint!(0u64), |sc|{
         let rep_oracle_address = managed_address!(&reputation_oracle);
@@ -173,9 +173,9 @@ fn test_bulk_payout_partial() {
 
         sc.setup(
             rep_oracle_address,
-            managed_biguint!(5u64),
             rec_oracle_address,
             managed_biguint!(7u64),
+            managed_biguint!(3u64),
             managed_buffer!(b"http://example.com"),
             managed_buffer!(b"test-hash")
         );
@@ -189,8 +189,8 @@ fn test_bulk_payout_partial() {
 
     blockchain_wrapper.execute_tx(owner_address, contract_wrapper, &rust_biguint!(0u64), |sc| {
         let mut payments: MultiValueEncoded<TxContextRef, (ManagedAddress<TxContextRef>, BigUint<TxContextRef>)> = MultiValueEncoded::new();
-        payments.push((managed_address!(&reputation_oracle), managed_biguint!(40u64)));
-        payments.push((managed_address!(&recording_oracle), managed_biguint!(50u64)));
+        payments.push((managed_address!(&reputation_oracle), managed_biguint!(5u64)));
+        payments.push((managed_address!(&recording_oracle), managed_biguint!(4u64)));
         let final_results: UrlHashPair<TxContextRef> = UrlHashPair::new(managed_buffer!(test_url), managed_buffer!(test_hash));
 
         sc.bulk_pay_out(payments, OptionalValue::Some(final_results));
@@ -224,8 +224,8 @@ fn test_bulk_payout_full() {
 
             sc.setup(
                 rep_oracle_address,
-                managed_biguint!(5u64),
                 rec_oracle_address,
+                managed_biguint!(5u64),
                 managed_biguint!(7u64),
                 managed_buffer!(b"http://example.com"),
                 managed_buffer!(b"test-hash")

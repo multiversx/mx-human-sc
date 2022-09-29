@@ -8,6 +8,7 @@ elrond_wasm_node::wasm_endpoints! {
     job
     (
         abort
+        addTrustedHandlers
         bulkPayOut
         cancel
         complete
