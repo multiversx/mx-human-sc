@@ -1,4 +1,17 @@
+////////////////////////////////////////////////////
+////////////////// AUTO-GENERATED //////////////////
+////////////////////////////////////////////////////
+
 #![no_std]
 
-pub use elrond_wasm_output::*;
-pub use job_factory::*;
+elrond_wasm_node::wasm_endpoints! {
+    job_factory
+    (
+        createJob
+        hasJob
+        jobs
+        token
+    )
+}
+
+elrond_wasm_node::wasm_empty_callback! {}
