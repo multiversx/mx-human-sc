@@ -16,13 +16,13 @@ pub trait JobContract: base::JobBaseModule {
     fn init(
         &self,
         token: EgldOrEsdtTokenIdentifier,
-        canceller: ManagedAddress,
+        canceler: ManagedAddress,
         duration: u64,
         trusted_callers: MultiValueEncoded<ManagedAddress>
     ) {
         self.init_base(token, duration, trusted_callers);
         self.launcher().set(self.blockchain().get_caller());
-        self.canceller().set(canceller);
+        self.canceler().set(canceler);
     }
 
     #[endpoint]
@@ -58,17 +58,19 @@ pub trait JobContract: base::JobBaseModule {
 
     #[endpoint]
     fn cancel(&self) {
+        self.require_trusted();
         self.require_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
         self.require_not_broke();
 
         let balance: BigUint = self.get_balance();
-        self.send().direct(&self.canceller().get(), &self.token().get(), 0, &balance);
+        self.send().direct(&self.canceler().get(), &self.token().get(), 0, &balance);
 
         self.status().set(EscrowStatus::Cancelled)
     }
 
     #[endpoint]
-    fn abort(&self) -> () {
+    fn abort(&self) {
+        self.require_trusted();
         self.require_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
         let balance: BigUint = self.get_balance();
         if balance != 0 {
@@ -170,8 +172,8 @@ pub trait JobContract: base::JobBaseModule {
     #[storage_mapper("launcher")]
     fn launcher(&self) -> SingleValueMapper<ManagedAddress>;
 
-    #[storage_mapper("canceller")]
-    fn canceller(&self) -> SingleValueMapper<ManagedAddress>;
+    #[storage_mapper("canceler")]
+    fn canceler(&self) -> SingleValueMapper<ManagedAddress>;
 
     #[event("pending")]
     fn pending_event(&self, #[indexed] url: ManagedBuffer, #[indexed] hash: ManagedBuffer);

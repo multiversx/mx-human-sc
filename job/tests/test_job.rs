@@ -77,6 +77,13 @@ fn test_job_cancel() {
 
     let current_balance = blockchain_wrapper.get_esdt_balance(&owner_address, HMT_TOKEN, 0);
     assert_eq!(current_balance, rust_biguint!(100u64));
+
+    blockchain_wrapper.execute_query(contract_wrapper, |sc|{
+        let current_status = sc.status().get();
+        let expected_status = EscrowStatus::Cancelled;
+
+        assert_eq!(current_status, expected_status);
+    }).assert_ok();
 }
 
 #[test]
