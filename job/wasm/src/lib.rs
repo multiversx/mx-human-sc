@@ -1,4 +1,28 @@
+////////////////////////////////////////////////////
+////////////////// AUTO-GENERATED //////////////////
+////////////////////////////////////////////////////
+
 #![no_std]
 
-pub use elrond_wasm_output::*;
-pub use job::*;
+elrond_wasm_node::wasm_endpoints! {
+    job
+    (
+        abort
+        addTrustedHandlers
+        bulkPayOut
+        cancel
+        complete
+        deposit
+        getBalance
+        getExpiration
+        getFinalResults
+        getIntermediateResults
+        getManifest
+        getStatus
+        getToken
+        setup
+        storeResults
+    )
+}
+
+elrond_wasm_node::wasm_empty_callback! {}

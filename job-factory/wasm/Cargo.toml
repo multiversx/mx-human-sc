@@ -1,12 +1,17 @@
 [package]
 name = "job-factory-wasm"
 version = "0.0.0"
-authors = ["Andrei Marinica <andrei.marinica@elrond.com>"]
 edition = "2018"
 publish = false
+authors = [ "you",]
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = [ "cdylib",]
+
+[workspace]
+members = [ ".",]
+
+[dev-dependencies]
 
 [profile.release]
 codegen-units = 1
@@ -17,12 +22,10 @@ panic = "abort"
 
 [dependencies.job-factory]
 path = ".."
-features = ["wasm-output-mode"]
-default-features = false
+
+[dependencies.elrond-wasm-node]
+version = "0.35.0"
 
 [dependencies.elrond-wasm-output]
-version = "0.18.1"
-features = ["wasm-output-mode"]
-
-[workspace]
-members = ["."]
+version = "0.35.0"
+features = [ "wasm-output-mode",]

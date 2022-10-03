@@ -1,23 +1,21 @@
 [package]
 name = "job-factory"
-version = "0.0.0"
-authors = [ "Claudiu-Marcel Bruda <claudiu.bruda@elrond.com>",]
+version = "0.1.0"
+authors = ["Claudiu-Marcel Bruda <claudiu.bruda@elrond.com>"]
 edition = "2018"
 publish = false
 
 [lib]
-path = "src/job-factory.rs"
+path = "src/lib.rs"
 
-[features]
-wasm-output-mode = ["elrond-wasm-node"]
+[dev-dependencies]
+num-bigint = "0.4.2"
 
 [dependencies.elrond-wasm]
-version = "0.18.1"
-features = ["derive"]
-
-[dependencies.elrond-wasm-node]
-version = "0.18.1"
-optional = true
+version = "0.35.0"
 
 [dev-dependencies.elrond-wasm-debug]
-version = "0.18.1"
+version = "0.35.0"
+
+[dependencies.job]
+path = "../job"
