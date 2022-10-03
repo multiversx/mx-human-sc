@@ -18,7 +18,10 @@ elrond_wasm_node::wasm_endpoints! {
         getFinalResults
         getIntermediateResults
         getManifest
+<<<<<<< HEAD
         getOracles
+=======
+>>>>>>> fd4c8b4 (Updated escrow contracts to latest (#3))
         getStatus
         getToken
         setup

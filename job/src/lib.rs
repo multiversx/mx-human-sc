@@ -108,11 +108,14 @@ pub trait JobContract: base::JobBaseModule {
         self.final_results().get()
     }
 
+<<<<<<< HEAD
     #[view(getOracles)]
     fn get_oracles(&self) -> OraclePair<Self::Api> {
         self.oracle_pair().get()
     }
 
+=======
+>>>>>>> fd4c8b4 (Updated escrow contracts to latest (#3))
     fn transfer_fee(
         &self,
         mut from_amount: BigUint,
@@ -174,6 +177,15 @@ pub trait JobContract: base::JobBaseModule {
         }
     }
 
+<<<<<<< HEAD
+=======
+    #[storage_mapper("launcher")]
+    fn launcher(&self) -> SingleValueMapper<ManagedAddress>;
+
+    #[storage_mapper("canceler")]
+    fn canceler(&self) -> SingleValueMapper<ManagedAddress>;
+
+>>>>>>> fd4c8b4 (Updated escrow contracts to latest (#3))
     #[event("pending")]
     fn pending_event(&self, #[indexed] url: ManagedBuffer, #[indexed] hash: ManagedBuffer);
 }
