@@ -34,7 +34,10 @@ pub trait JobBaseModule {
 
     fn require_trusted(&self) {
         let current_caller = self.blockchain().get_caller();
-        require!(self.trusted_callers().contains(&current_caller), "Caller is not trusted")
+        let is_launcher = self.launcher().get() == current_caller;
+        let is_trusted_handler = self.trusted_callers().contains(&current_caller);
+
+        require!(is_launcher || is_trusted_handler, "Caller is not trusted")
     }
 
     fn require_not_expired(&self) {
@@ -118,4 +121,10 @@ pub trait JobBaseModule {
 
     #[storage_mapper("final_results")]
     fn final_results(&self) -> SingleValueMapper<UrlHashPair<Self::Api>>;
+
+    #[storage_mapper("launcher")]
+    fn launcher(&self) -> SingleValueMapper<ManagedAddress>;
+
+    #[storage_mapper("canceler")]
+    fn canceler(&self) -> SingleValueMapper<ManagedAddress>;
 }
