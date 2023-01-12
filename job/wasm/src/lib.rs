@@ -18,6 +18,7 @@ elrond_wasm_node::wasm_endpoints! {
         getFinalResults
         getIntermediateResults
         getManifest
+        getOracles
         getStatus
         getToken
         setup

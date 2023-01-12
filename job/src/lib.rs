@@ -169,11 +169,10 @@ pub trait JobContract: base::JobBaseModule {
         }
     }
 
-    #[storage_mapper("launcher")]
-    fn launcher(&self) -> SingleValueMapper<ManagedAddress>;
-
-    #[storage_mapper("canceler")]
-    fn canceler(&self) -> SingleValueMapper<ManagedAddress>;
+    #[view(getOracles)]
+    fn get_oracles(&self) -> OraclePair<Self::Api> {
+        self.oracle_pair().get()
+    }
 
     #[event("pending")]
     fn pending_event(&self, #[indexed] url: ManagedBuffer, #[indexed] hash: ManagedBuffer);
