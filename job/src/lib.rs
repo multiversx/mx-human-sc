@@ -184,7 +184,7 @@ pub trait JobContract: base::JobBaseModule {
         } else {
             EscrowStatus::Paid
         };
-        self.status().set(&next_status);
+        self.status().set(next_status);
 
         if let Some(results) = final_results.into_option() {
             self.final_results().set(&results);
