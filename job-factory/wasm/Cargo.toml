@@ -1,9 +1,9 @@
 [package]
 name = "job-factory-wasm"
 version = "0.0.0"
+authors = ["MultiversX <contact@multiversx.com>"]
 edition = "2018"
 publish = false
-authors = ["you"]
 
 [lib]
 crate-type = ["cdylib"]

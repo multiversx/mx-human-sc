@@ -3,7 +3,7 @@ name = "job-wasm"
 version = "0.0.0"
 edition = "2018"
 publish = false
-authors = ["you"]
+authors = ["MultiversX <contact@multiversx.com>"]
 
 [lib]
 crate-type = ["cdylib"]
