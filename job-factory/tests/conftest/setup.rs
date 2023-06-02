@@ -1,6 +1,6 @@
-use elrond_wasm::types::EgldOrEsdtTokenIdentifier;
-use elrond_wasm_debug::{
-    testing_framework::BlockchainStateWrapper,
+use multiversx_sc::types::EgldOrEsdtTokenIdentifier;
+use multiversx_sc_scenario::{
+    whitebox::BlockchainStateWrapper,
     DebugApi,
     {rust_biguint, managed_token_id, managed_address},
 };

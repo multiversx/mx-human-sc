@@ -1,5 +1,5 @@
 #![no_std]
-elrond_wasm::imports!();
+multiversx_sc::imports!();
 
 pub mod status;
 pub mod base;
@@ -9,7 +9,7 @@ use status::EscrowStatus;
 use constants::OraclePair;
 use constants::UrlHashPair;
 
-#[elrond_wasm::contract]
+#[multiversx_sc::contract]
 pub trait JobContract: base::JobBaseModule {
 
     #[init]

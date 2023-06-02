@@ -1,8 +1,8 @@
 mod conftest;
 
 use conftest::*;
-use elrond_wasm::types::MultiValueEncoded;
-use elrond_wasm_debug::{managed_address, rust_biguint};
+use multiversx_sc::types::MultiValueEncoded;
+use multiversx_sc_scenario::{managed_address, rust_biguint};
 use job_factory::{self, JobFactoryContract};
 use job;
 

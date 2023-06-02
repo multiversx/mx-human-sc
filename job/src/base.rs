@@ -1,5 +1,5 @@
-elrond_wasm::imports!();
-elrond_wasm::derive_imports!();
+multiversx_sc::imports!();
+multiversx_sc::derive_imports!();
 
 use crate::status::EscrowStatus;
 use crate::constants::OraclePair;
@@ -7,7 +7,7 @@ use crate::constants::UrlHashPair;
 
 const BULK_MAX_COUNT: usize = 100;
 
-#[elrond_wasm::module]
+#[multiversx_sc::module]
 pub trait JobBaseModule {
 
     fn init_base(

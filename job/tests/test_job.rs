@@ -1,12 +1,12 @@
 mod conftest;
 
 use conftest::*;
-use elrond_wasm::{types::{ManagedAddress, MultiValueEncoded, BigUint}, elrond_codec::multi_types::OptionalValue};
-use elrond_wasm_debug::{
+use multiversx_sc::{types::{ManagedAddress, MultiValueEncoded, BigUint}, codec::multi_types::OptionalValue};
+use multiversx_sc_scenario::{
     rust_biguint,
     managed_address,
     managed_biguint,
-    managed_buffer, tx_mock::TxContextRef,
+    managed_buffer, multiversx_chain_vm::tx_mock::TxContextRef,
 };
 use job::{
     contract_obj, JobContract,

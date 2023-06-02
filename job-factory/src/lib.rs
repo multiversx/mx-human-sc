@@ -1,9 +1,9 @@
 #![no_std]
-elrond_wasm::imports!();
+multiversx_sc::imports!();
 
 const JOB_CONTRACT_DURATION: u64 = 100 * 24 * 60 * 60;  // 100 days
 
-#[elrond_wasm::contract]
+#[multiversx_sc::contract]
 pub trait JobFactoryContract {
     #[init]
     fn init(

@@ -1,7 +1,7 @@
 mod conftest;
 
 use conftest::*;
-use elrond_wasm_debug::{
+use multiversx_sc_scenario::{
     rust_biguint,
     managed_biguint,
 };

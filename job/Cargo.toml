@@ -11,8 +11,7 @@ path = "src/lib.rs"
 [dev-dependencies]
 num-bigint = "0.4.2"
 
-[dependencies.elrond-wasm]
-version = "0.35.0"
-
-[dev-dependencies.elrond-wasm-debug]
-version = "0.35.0"
+[dev-dependencies.multiversx-sc-scenario]
+version = "0.39.0"
+[dependencies.multiversx-sc]
+version = "0.39.0"

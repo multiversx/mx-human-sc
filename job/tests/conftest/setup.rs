@@ -1,9 +1,7 @@
-use elrond_wasm::types::{MultiValueEncoded, EgldOrEsdtTokenIdentifier};
-use elrond_wasm_debug::{
-    testing_framework::BlockchainStateWrapper,
-    tx_mock::TxContextRef,
+use multiversx_sc::types::{MultiValueEncoded, EgldOrEsdtTokenIdentifier};
+use multiversx_sc_scenario::{
     DebugApi,
-    {rust_biguint, managed_token_id, managed_address},
+    {rust_biguint, managed_token_id, managed_address}, testing_framework::BlockchainStateWrapper, multiversx_chain_vm::tx_mock::TxContextRef,
 };
 use super::{
     builders::ContractSetup,
