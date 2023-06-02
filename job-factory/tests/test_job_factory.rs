@@ -1,7 +1,6 @@
 mod conftest;
 
 use conftest::*;
-use job;
 use job_factory::{self, JobFactoryContract};
 use multiversx_sc::types::MultiValueEncoded;
 use multiversx_sc_scenario::{managed_address, rust_biguint};
@@ -27,7 +26,7 @@ fn test_deploy_job() {
                 let new_job_contract_address = sc.create_job(trusted_handlers);
                 let result = sc.has_job(new_job_contract_address);
 
-                assert_eq!(result, true);
+                assert!(result);
             },
         )
         .assert_ok();

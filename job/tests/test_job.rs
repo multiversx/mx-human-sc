@@ -23,10 +23,10 @@ fn test_job_setup() {
     let reputation_oracle = blockchain_wrapper.create_user_account(&rust_biguint!(0u64));
     let recording_oracle = blockchain_wrapper.create_user_account(&rust_biguint!(0u64));
 
-    blockchain_wrapper.set_esdt_balance(&owner_address, OTHER_TOKEN, &rust_biguint!(100u64));
+    blockchain_wrapper.set_esdt_balance(owner_address, OTHER_TOKEN, &rust_biguint!(100u64));
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
+            owner_address,
             &contract_wrapper,
             &rust_biguint!(0u64),
             |sc| {
@@ -63,7 +63,7 @@ fn test_job_cancel() {
     let contract_wrapper = &setup.contract_wrapper;
     let owner_address = &setup.owner_address;
 
-    blockchain_wrapper.set_esdt_balance(&owner_address, HMT_TOKEN, &rust_biguint!(100u64));
+    blockchain_wrapper.set_esdt_balance(owner_address, HMT_TOKEN, &rust_biguint!(100u64));
     blockchain_wrapper
         .execute_esdt_transfer(
             owner_address,
@@ -77,19 +77,19 @@ fn test_job_cancel() {
         )
         .assert_ok();
 
-    let current_balance = blockchain_wrapper.get_esdt_balance(&owner_address, HMT_TOKEN, 0);
+    let current_balance = blockchain_wrapper.get_esdt_balance(owner_address, HMT_TOKEN, 0);
     assert_eq!(current_balance, rust_biguint!(100u64) - rust_biguint!(5u64));
 
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
+            owner_address,
             contract_wrapper,
             &rust_biguint!(0u64),
             |sc| sc.cancel(),
         )
         .assert_ok();
 
-    let current_balance = blockchain_wrapper.get_esdt_balance(&owner_address, HMT_TOKEN, 0);
+    let current_balance = blockchain_wrapper.get_esdt_balance(owner_address, HMT_TOKEN, 0);
     assert_eq!(current_balance, rust_biguint!(100u64));
 
     blockchain_wrapper
@@ -115,7 +115,7 @@ fn test_store_results() {
     // Set status to PENDING
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
+            owner_address,
             contract_wrapper,
             &rust_biguint!(0u64),
             |sc| {
@@ -127,7 +127,7 @@ fn test_store_results() {
     // Store results
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
+            owner_address,
             contract_wrapper,
             &rust_biguint!(0u64),
             |sc| {
@@ -157,7 +157,7 @@ fn test_job_complete() {
     // Set status to PAID
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
+            owner_address,
             contract_wrapper,
             &rust_biguint!(0u64),
             |sc| {
@@ -168,7 +168,7 @@ fn test_job_complete() {
 
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
+            owner_address,
             contract_wrapper,
             &rust_biguint!(0u64),
             |sc| sc.complete(),
@@ -192,7 +192,7 @@ fn test_job_abort() {
 
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
+            owner_address,
             contract_wrapper,
             &rust_biguint!(0u64),
             |sc| sc.abort(),
@@ -218,8 +218,8 @@ fn test_bulk_payout_partial() {
     );
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
-            &contract_wrapper,
+            owner_address,
+            contract_wrapper,
             &rust_biguint!(0u64),
             |sc| {
                 let rep_oracle_address = managed_address!(&reputation_oracle);
@@ -296,8 +296,8 @@ fn test_bulk_payout_full() {
     );
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
-            &contract_wrapper,
+            owner_address,
+            contract_wrapper,
             &rust_biguint!(0u64),
             |sc| {
                 let rep_oracle_address = managed_address!(&reputation_oracle);

@@ -17,7 +17,7 @@ fn test_job_view_balance() {
 
     blockchain_wrapper
         .execute_tx(
-            &owner_address,
+            owner_address,
             &setup.contract_wrapper,
             &rust_biguint!(0u64),
             |sc| {
@@ -36,7 +36,7 @@ fn test_job_deposit() {
     let blockchain_wrapper = &mut setup.blockchain_wrapper;
     let owner_address = &setup.owner_address;
 
-    blockchain_wrapper.set_esdt_balance(&owner_address, HMT_TOKEN, &rust_biguint!(100u64));
+    blockchain_wrapper.set_esdt_balance(owner_address, HMT_TOKEN, &rust_biguint!(100u64));
     blockchain_wrapper
         .execute_esdt_transfer(
             owner_address,
@@ -66,7 +66,7 @@ fn test_job_deposit_wrong_token() {
     let blockchain_wrapper = &mut setup.blockchain_wrapper;
     let owner_address = &setup.owner_address;
 
-    blockchain_wrapper.set_esdt_balance(&owner_address, OTHER_TOKEN, &rust_biguint!(100u64));
+    blockchain_wrapper.set_esdt_balance(owner_address, OTHER_TOKEN, &rust_biguint!(100u64));
     blockchain_wrapper
         .execute_esdt_transfer(
             owner_address,
