@@ -1,16 +1,18 @@
 all: clean build
 
 build:
-	erdpy --verbose contract build job
-	erdpy --verbose contract build job-factory
+	sc-meta all build
 
 clean:
-	./clean-wasm.sh
+	sc-meta all clean
+	cargo clean
 
 bootstrap:
 	./script/contracts/bootstrap
 
-setup: clean build
+setup:
+	cargo install multiversx-sc-meta
+	sc-meta all build
 
 test-job:
 	cargo test --package job
