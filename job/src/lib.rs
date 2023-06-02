@@ -1,24 +1,23 @@
 #![no_std]
 multiversx_sc::imports!();
 
-pub mod status;
 pub mod base;
 pub mod constants;
+pub mod status;
 
-use status::EscrowStatus;
 use constants::OraclePair;
 use constants::UrlHashPair;
+use status::EscrowStatus;
 
 #[multiversx_sc::contract]
 pub trait JobContract: base::JobBaseModule {
-
     #[init]
     fn init(
         &self,
         token: EgldOrEsdtTokenIdentifier,
         canceler: ManagedAddress,
         duration: u64,
-        trusted_callers: MultiValueEncoded<ManagedAddress>
+        trusted_callers: MultiValueEncoded<ManagedAddress>,
     ) {
         self.init_base(token, duration, trusted_callers);
         self.launcher().set(self.blockchain().get_caller());
@@ -37,7 +36,10 @@ pub trait JobContract: base::JobBaseModule {
     ) {
         self.require_trusted();
         self.require_not_expired();
-        require!(self.status().get() == EscrowStatus::Launched, "Contract is not launched");
+        require!(
+            self.status().get() == EscrowStatus::Launched,
+            "Contract is not launched"
+        );
 
         let total_stake = &reputation_oracle_stake + &recording_oracle_stake;
         require!(total_stake <= 100_u64, "Stake out of bounds");
@@ -46,12 +48,13 @@ pub trait JobContract: base::JobBaseModule {
             &reputation_oracle,
             reputation_oracle_stake,
             &recording_oracle,
-            recording_oracle_stake
+            recording_oracle_stake,
         ));
 
         self.trusted_callers().insert(recording_oracle);
         self.trusted_callers().insert(reputation_oracle);
-        self.manifest().set(&UrlHashPair::new(url.clone(), hash.clone()));
+        self.manifest()
+            .set(&UrlHashPair::new(url.clone(), hash.clone()));
         self.status().set(EscrowStatus::Pending);
         self.pending_event(url, hash);
     }
@@ -59,11 +62,16 @@ pub trait JobContract: base::JobBaseModule {
     #[endpoint]
     fn cancel(&self) {
         self.require_trusted();
-        self.require_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
+        self.require_status(&[
+            EscrowStatus::Launched,
+            EscrowStatus::Pending,
+            EscrowStatus::Partial,
+        ]);
         self.require_not_broke();
 
         let balance: BigUint = self.get_balance();
-        self.send().direct(&self.canceler().get(), &self.token().get(), 0, &balance);
+        self.send()
+            .direct(&self.canceler().get(), &self.token().get(), 0, &balance);
 
         self.status().set(EscrowStatus::Cancelled)
     }
@@ -71,7 +79,11 @@ pub trait JobContract: base::JobBaseModule {
     #[endpoint]
     fn abort(&self) {
         self.require_trusted();
-        self.require_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
+        self.require_status(&[
+            EscrowStatus::Launched,
+            EscrowStatus::Pending,
+            EscrowStatus::Partial,
+        ]);
         let balance: BigUint = self.get_balance();
         if balance != 0 {
             self.cancel()
@@ -98,13 +110,19 @@ pub trait JobContract: base::JobBaseModule {
 
     #[view(getIntermediateResults)]
     fn get_intermediate_results(&self) -> UrlHashPair<Self::Api> {
-        require!(!self.intermediate_results().is_empty(), "intermediate results are not set");
+        require!(
+            !self.intermediate_results().is_empty(),
+            "intermediate results are not set"
+        );
         self.intermediate_results().get()
     }
 
     #[view(getFinalResults)]
     fn get_final_results(&self) -> UrlHashPair<Self::Api> {
-        require!(!self.final_results().is_empty(), "final results are not set");
+        require!(
+            !self.final_results().is_empty(),
+            "final results are not set"
+        );
         self.final_results().get()
     }
 
@@ -149,13 +167,17 @@ pub trait JobContract: base::JobBaseModule {
 
         for (to, amount) in payments {
             let mut payout = amount.clone();
-            (payout, reputation_fee) = self.transfer_fee(payout, reputation_fee, &amount, &oracles.reputation.stake);
-            (payout, recording_fee) = self.transfer_fee(payout, recording_fee, &amount, &oracles.recording.stake);
+            (payout, reputation_fee) =
+                self.transfer_fee(payout, reputation_fee, &amount, &oracles.reputation.stake);
+            (payout, recording_fee) =
+                self.transfer_fee(payout, recording_fee, &amount, &oracles.recording.stake);
             self.send().direct(&to, &token, 0, &payout);
         }
 
-        self.send().direct(&oracles.reputation.address, &token, 0, &reputation_fee);
-        self.send().direct(&oracles.recording.address, &token, 0, &recording_fee);
+        self.send()
+            .direct(&oracles.reputation.address, &token, 0, &reputation_fee);
+        self.send()
+            .direct(&oracles.recording.address, &token, 0, &recording_fee);
 
         let next_status = if self.get_balance() != 0 {
             EscrowStatus::Partial

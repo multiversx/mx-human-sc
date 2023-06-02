@@ -24,11 +24,11 @@ impl<M: ManagedTypeApi> OraclePair<M> {
         reputation_address: &ManagedAddress<M>,
         reputation_stake: BigUint<M>,
         recording_address: &ManagedAddress<M>,
-        recording_stake: BigUint<M>
+        recording_stake: BigUint<M>,
     ) -> Self {
         Self {
             reputation: Oracle::new(reputation_address.clone(), reputation_stake),
-            recording: Oracle::new(recording_address.clone(), recording_stake)
+            recording: Oracle::new(recording_address.clone(), recording_stake),
         }
     }
 }

@@ -1,16 +1,12 @@
 #![no_std]
 multiversx_sc::imports!();
 
-const JOB_CONTRACT_DURATION: u64 = 100 * 24 * 60 * 60;  // 100 days
+const JOB_CONTRACT_DURATION: u64 = 100 * 24 * 60 * 60; // 100 days
 
 #[multiversx_sc::contract]
 pub trait JobFactoryContract {
     #[init]
-    fn init(
-        &self,
-        token: EgldOrEsdtTokenIdentifier,
-        job_template_address: ManagedAddress
-    ) {
+    fn init(&self, token: EgldOrEsdtTokenIdentifier, job_template_address: ManagedAddress) {
         self.token().set(token);
         self.job_template_address().set(job_template_address);
     }
@@ -28,14 +24,13 @@ pub trait JobFactoryContract {
             arguments.push_arg(trusted_handler);
         }
 
-        let (job_address, _) = Self::Api::send_api_impl()
-            .deploy_from_source_contract(
-                self.blockchain().get_gas_left(),
-                &BigUint::zero(),
-                &self.job_template_address().get(),
-                CodeMetadata::DEFAULT,
-                &arguments,
-            );
+        let (job_address, _) = Self::Api::send_api_impl().deploy_from_source_contract(
+            self.blockchain().get_gas_left(),
+            &BigUint::zero(),
+            &self.job_template_address().get(),
+            CodeMetadata::DEFAULT,
+            &arguments,
+        );
 
         self.jobs().insert(job_address.clone());
 

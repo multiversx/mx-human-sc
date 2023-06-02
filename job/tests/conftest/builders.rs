@@ -1,8 +1,7 @@
 use multiversx_sc::types::Address;
 
-use multiversx_sc_scenario::DebugApi;
 use multiversx_sc_scenario::whitebox::{BlockchainStateWrapper, ContractObjWrapper};
-
+use multiversx_sc_scenario::DebugApi;
 
 pub struct ContractSetup<ContractObjBuilder>
 where
@@ -15,4 +14,3 @@ where
     // Contract specific properties
     pub owner_address: Address,
 }
-
