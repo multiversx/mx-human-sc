@@ -1,20 +1,19 @@
-elrond_wasm::imports!();
-elrond_wasm::derive_imports!();
+multiversx_sc::imports!();
+multiversx_sc::derive_imports!();
 
-use crate::status::EscrowStatus;
 use crate::constants::OraclePair;
 use crate::constants::UrlHashPair;
+use crate::status::EscrowStatus;
 
 const BULK_MAX_COUNT: usize = 100;
 
-#[elrond_wasm::module]
+#[multiversx_sc::module]
 pub trait JobBaseModule {
-
     fn init_base(
         &self,
         token: EgldOrEsdtTokenIdentifier,
         duration: u64,
-        trusted_callers: MultiValueEncoded<ManagedAddress>
+        trusted_callers: MultiValueEncoded<ManagedAddress>,
     ) {
         self.token().set(token);
         self.status().set(EscrowStatus::Launched);
@@ -41,7 +40,10 @@ pub trait JobBaseModule {
     }
 
     fn require_not_expired(&self) {
-        require!(self.expiration().get() > self.blockchain().get_block_timestamp(), "Contract expired");
+        require!(
+            self.expiration().get() > self.blockchain().get_block_timestamp(),
+            "Contract expired"
+        );
     }
 
     fn require_status(&self, allowed_status: &[EscrowStatus]) {
@@ -54,14 +56,20 @@ pub trait JobBaseModule {
         );
     }
 
-    fn require_sufficient_balance(&self, payments_total: &BigUint){
+    fn require_sufficient_balance(&self, payments_total: &BigUint) {
         let current_balance = self.get_balance();
 
-        require!(payments_total <= &current_balance, "Not enough funds for payment");
+        require!(
+            payments_total <= &current_balance,
+            "Not enough funds for payment"
+        );
     }
 
     fn require_payments_not_zero(&self, payments_total: &BigUint) {
-        require!(payments_total > &BigUint::zero(), "Cannot process payments with 0 amount")
+        require!(
+            payments_total > &BigUint::zero(),
+            "Cannot process payments with 0 amount"
+        )
     }
 
     fn require_max_recipients(&self, recipients: usize) {
@@ -70,10 +78,14 @@ pub trait JobBaseModule {
 
     #[endpoint]
     #[payable("*")]
-    fn deposit(&self){
+    fn deposit(&self) {
         self.require_trusted();
         self.require_not_expired();
-        self.require_status(&[EscrowStatus::Launched, EscrowStatus::Pending, EscrowStatus::Partial]);
+        self.require_status(&[
+            EscrowStatus::Launched,
+            EscrowStatus::Pending,
+            EscrowStatus::Partial,
+        ]);
 
         let (token, _, _) = self.call_value().egld_or_single_esdt().into_tuple();
         require!(token == self.token().get(), "Wrong payment token");

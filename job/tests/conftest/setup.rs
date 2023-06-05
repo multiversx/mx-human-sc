@@ -1,24 +1,17 @@
-use elrond_wasm::types::{MultiValueEncoded, EgldOrEsdtTokenIdentifier};
-use elrond_wasm_debug::{
+use super::{builders::ContractSetup, CF_DEADLINE, HMT_TOKEN, WASM_PATH};
+use multiversx_sc::types::{EgldOrEsdtTokenIdentifier, MultiValueEncoded};
+use multiversx_sc_scenario::{
+    multiversx_chain_vm::tx_mock::TxContextRef,
     testing_framework::BlockchainStateWrapper,
-    tx_mock::TxContextRef,
-    DebugApi,
-    {rust_biguint, managed_token_id, managed_address},
-};
-use super::{
-    builders::ContractSetup,
-    WASM_PATH,
-    HMT_TOKEN,
-    CF_DEADLINE
+    DebugApi, {managed_address, managed_token_id, rust_biguint},
 };
 
 use job::{ContractObj, JobContract};
 
-
 /// Setup for the Job Contract. Will initialize the contract builder and initial
 /// deploy of the contract
 pub fn setup_contract<ContractObjBuilder>(
-    cf_builder: ContractObjBuilder
+    cf_builder: ContractObjBuilder,
 ) -> ContractSetup<ContractObjBuilder>
 where
     ContractObjBuilder: 'static + Copy + Fn() -> job::ContractObj<DebugApi>,
@@ -45,17 +38,12 @@ where
             EgldOrEsdtTokenIdentifier::esdt(token),
             canceller,
             CF_DEADLINE,
-            trusted_callers
+            trusted_callers,
         )
     };
 
     blockchain_wrapper
-        .execute_tx(
-            &owner_address,
-            &contract_wrapper,
-            &rust_zero,
-            init_contract
-        )
+        .execute_tx(&owner_address, &contract_wrapper, &rust_zero, init_contract)
         .assert_ok();
 
     ContractSetup {
@@ -63,5 +51,4 @@ where
         owner_address,
         contract_wrapper,
     }
-
 }

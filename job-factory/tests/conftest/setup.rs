@@ -1,18 +1,11 @@
-use elrond_wasm::types::EgldOrEsdtTokenIdentifier;
-use elrond_wasm_debug::{
-    testing_framework::BlockchainStateWrapper,
-    DebugApi,
-    {rust_biguint, managed_token_id, managed_address},
-};
-use super::{
-    builders::ContractSetup,
-    WASM_PATH,
-    HMT_TOKEN,
-    JOB_WASM_PATH
+use super::{builders::ContractSetup, HMT_TOKEN, JOB_WASM_PATH, WASM_PATH};
+use multiversx_sc::types::EgldOrEsdtTokenIdentifier;
+use multiversx_sc_scenario::{
+    whitebox::BlockchainStateWrapper,
+    DebugApi, {managed_address, managed_token_id, rust_biguint},
 };
 
 use job_factory::JobFactoryContract;
-
 
 /// Setup for the Job Contract. Will initialize the contract builder and initial
 /// deploy of the contract
@@ -41,16 +34,15 @@ where
         &rust_zero,
         Some(&owner_address),
         job_builder,
-        JOB_WASM_PATH
+        JOB_WASM_PATH,
     );
 
-
     blockchain_wrapper
-        .execute_tx(&owner_address,&factory_wrapper,&rust_zero, |sc| {
+        .execute_tx(&owner_address, &factory_wrapper, &rust_zero, |sc| {
             let token = managed_token_id!(HMT_TOKEN);
             sc.init(
                 EgldOrEsdtTokenIdentifier::esdt(token),
-                managed_address!(job_wrapper.address_ref())
+                managed_address!(job_wrapper.address_ref()),
             )
         })
         .assert_ok();
@@ -59,7 +51,6 @@ where
         blockchain_wrapper,
         owner_address,
         factory_wrapper,
-        job_wrapper
+        job_wrapper,
     }
-
 }

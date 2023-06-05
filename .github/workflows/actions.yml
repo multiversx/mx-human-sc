@@ -2,25 +2,20 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 permissions:
-  actions: write
   checks: write
-  contents: write
-  id-token: write
-  issues: write
-  discussions: write
   pull-requests: write
-  statuses: write
 
 jobs:
   contracts:
     name: Contracts
-    uses: ElrondNetwork/elrond-actions/.github/workflows/contracts.yml@v1
+    uses: multiversx/mx-sc-actions/.github/workflows/contracts.yml@v2.3.0
     with:
-      rust-toolchain: nightly-2022-03-01
-      vmtools-version: v1.4.43
-      extra-build-args: --ignore-eei-checks
+      rust-toolchain: nightly-2023-04-24
+      vmtools-version: v1.4.60
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}

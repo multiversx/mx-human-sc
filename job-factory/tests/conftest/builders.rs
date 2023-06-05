@@ -1,13 +1,12 @@
-use elrond_wasm::types::Address;
+use multiversx_sc::types::Address;
 
-use elrond_wasm_debug::DebugApi;
-use elrond_wasm_debug::testing_framework::{BlockchainStateWrapper, ContractObjWrapper};
-
+use multiversx_sc_scenario::whitebox::{BlockchainStateWrapper, ContractObjWrapper};
+use multiversx_sc_scenario::DebugApi;
 
 pub struct ContractSetup<JobFactoryBuilder, JobBuilder>
 where
     JobFactoryBuilder: 'static + Copy + Fn() -> job_factory::ContractObj<DebugApi>,
-    JobBuilder: 'static + Copy + Fn() -> job::ContractObj<DebugApi>
+    JobBuilder: 'static + Copy + Fn() -> job::ContractObj<DebugApi>,
 {
     // Blockchain specific properties
     pub blockchain_wrapper: BlockchainStateWrapper,
@@ -17,6 +16,3 @@ where
     // Contract specific properties
     pub owner_address: Address,
 }
-
-
-

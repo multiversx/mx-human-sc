@@ -1,14 +1,13 @@
 [package]
 name = "job-factory-meta"
 version = "0.0.0"
+authors = ["MultiversX <contact@multiversx.com>"]
 edition = "2018"
 publish = false
-authors = [ "you",]
 
 [dev-dependencies]
-
 [dependencies.job-factory]
 path = ".."
 
-[dependencies.elrond-wasm-debug]
-version = "0.35.0"
+[dependencies.multiversx-sc-meta]
+version = "0.41.0"
